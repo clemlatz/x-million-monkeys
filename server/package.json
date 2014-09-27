@@ -1,0 +1,9 @@
+{
+  "name": "x-million-monkeys",
+  "description": "X Million Monkeys",
+  "version": "0.0.1",
+  "private": true,
+  "dependencies": {
+    "express": "4.x"
+  }
+}

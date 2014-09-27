@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+
+<html>
+	<head>
+		<meta charset="utf8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+		
+		<title>x million monkeys [alpha]</title>
+		
+		<link id="favicon" rel="icon" type="image/png" href="/assets/images/monkey0.png">
+		
+		<link rel="stylesheet" type="text/css" href="/assets/css/xmm-0.22.css">
+		<link rel="stylesheet" type="text/css" href="/assets/css/tooltipster.css" />
+		
+		<meta property="og:type" content="website">
+		<meta property="og:title" content="x million monkeys">
+		<meta property="og:url" content="http://monkeys.nokto.net/">
+		<meta property="og:description" content="Write the next word."/>
+		<meta property="og:site_name" content="x million monkeys"/>
+		<meta property="og:image" content="http://monkeys.nokto.net/assets/images/preview.png">
+		
+	</head>
+	
+	<body>
+		
+		<div id="alertWrapper">
+			<div id="alert">
+				Connecting...
+			</div>
+		</div>
+		
+		<div id="ui" class="hidden">
+		
+			<div id="fb-root"></div>
+			<script>(function(d, s, id) {
+			  var js, fjs = d.getElementsByTagName(s)[0];
+			  if (d.getElementById(id)) return;
+			  js = d.createElement(s); js.id = id;
+			  js.src = "//connect.facebook.net/fr_FR/sdk.js#xfbml=1&appId=1375000412742634&version=v2.0";
+			  fjs.parentNode.insertBefore(js, fjs);
+			}(document, 'script', 'facebook-jssdk'));</script>
+			
+			<header>
+				<span id="social">
+					<a href="https://twitter.com/search?q=%23xmm" target="_blank"><img src="/assets/images/twitter.png" title="Select text to share it with #xmm on Twitter" width=20 style="vertical-align: text-bottom;"></a>
+					<a href="https://www.facebook.com/xmillionmonkeys" target="_blank"><img src="/assets/images/facebook.png" title="Follow us on Facebook !" width=20 style="vertical-align: text-bottom;"></a>
+				</span>
+				<span id="logo"><img id="logo_image" src="/assets/images/monkey0.png" data-goto="route" class="goto pointer" title="Home Page (Ctrl+H)" width=32 style="float: left; margin-right: 7px;"></span>
+				<span id="x">x</span> million monkeys<br>[alpha<span id="app_version"></span>] </span>
+			</header>
+			
+			<div id="pages"></div>
+			
+			<div id="sharer">
+				<textarea id="excerpt"></textarea>
+				
+				<span id="close">Close</span>
+				<p>
+					<span id="twitter">Share on Twitter</span>
+				</p>
+			</div>
+			
+			<div id="inputZone">
+				<p id="invite">Write the next word :</p>
+				<input type="text" id="input" data-version=0 maxlength=30 autocomplete="off" autocorrect="off" autocapitalize="off">				
+			
+				<p id="theme"></p>
+			</div>
+			
+			<footer id="footer">
+				<span id="footer_stats"></span>
+				<nav>
+					|
+					<a id="prev_page" class="goto tooltip" title="Previous Page (Ctrl+J)">&laquo;</a>
+					<a id="next_page" class="goto tooltip" title="Next Page (Ctrl+K)">&raquo;</a>
+				</nav>
+			</footer>
+			
+			<div id="sounds">
+				<audio id="key">
+					<source src="/assets/sounds/key.wav" type="audio/wav">
+				</audio>
+				<audio id="error">
+					<source src="/assets/sounds/error.wav" type="audio/wav">
+				</audio>
+				<audio id="silence">
+					<source src="/assets/sounds/silence.mp3" type="audio/mp3">
+				</audio>
+			</div>
+		
+		</div>
+		
+		<script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
+		<script src="//cdnjs.cloudflare.com/ajax/libs/modernizr/2.8.1/modernizr.min.js"></script>
+		<script src="/assets/js/jquery.hotkey.js"></script>
+		<script src="/assets/js/jquery.tooltipster.min.js"></script>
+		<script src="/assets/js/jquery.touchSwipe.1.6.min.js"></script>
+		<script src="/assets/js/smooth-scroll.4.5.js"></script>
+		
+		<script src="/assets/js/xmm-0.22.3.js"></script>
+		
+		<script>
+			(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+			(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+			m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+			})(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+		  
+			ga('create', 'UA-1439349-31', 'nokto.net');
+			ga('send', 'pageview');
+		</script>
+		
+	</body>
+</html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

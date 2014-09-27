@@ -1,0 +1,234 @@
+	@import url(http://fonts.googleapis.com/css?family=Cutive+Mono);
+
+	/* Eric Meyer's Reset CSS v2.0 - http://cssreset.com */
+	html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td,article,aside,canvas,details,embed,figure,figcaption,footer,header,hgroup,menu,nav,output,ruby,section,summary,time,mark,audio,video{border:0;font-size:100%;font:inherit;vertical-align:baseline;margin:0;padding:0}article,aside,details,figcaption,figure,footer,header,hgroup,menu,nav,section{display:block}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:none}table{border-collapse:collapse;border-spacing:0}
+	
+	body, input, textarea {
+		font-family: 'Cutive Mono', monospace;
+		letter-spacing: -2px;
+		text-align: justify;
+		background: black;
+		color: white;
+		font-size: 16px;
+	}
+	
+	header {
+		box-sizing: border-box;
+		background-color: transparent;
+		background-image: url('/assets/images/header.png');
+		/*background-position: bottom center;*/
+		position: fixed;
+		top: 0;
+		left: 0;
+		width: 100%;
+		height: 100px;
+		padding: 5px;
+		z-index: 1;
+	}
+	
+	.page {
+		display: none;
+		box-sizing: border-box;
+		width: 95%;
+		max-width: 480px;
+		margin: auto;
+		margin-top: 100px;
+		word-wrap: break-word;
+		overflow-wrap: break-word;
+		padding: 5px;
+	}
+	
+	.page_content {
+		position: relative;
+		line-height: 1.12;
+		color: rgb(175,175,175);
+	}
+	
+	.inputs {
+		margin-top: 1em;
+		text-align: center;
+	}
+	
+	.saying {
+		font-style: italic;
+		color: rgb(175,175,175);
+	}
+	
+	.my_input {
+		color:  white;
+	}
+	
+	.saying:after {
+		content: " — ";
+	}
+	
+	.saying:last-child:after {
+		content:  "";
+	}
+	
+	@media all and (max-width: 768px) {
+		#page {
+			margin-bottom: 100px;
+		}
+	}
+	
+	h1 {
+		margin-top: 25px;
+		text-align: center;
+		font-size: 25px;
+	}
+	
+	#inputZone {
+		margin: 25px auto;
+		width:  95%;
+		margin-bottom: 300px;
+	}
+	
+	#invite, #theme {
+		text-align: center;
+	}
+	
+	#input {
+		display: block;
+		border: none;
+		outline: none;
+		color: black;
+		width: 95%;
+		max-width: 480px;
+		text-align: center;
+		margin: auto;
+		background: black;
+		color: rgb(175,175,175);
+		margin-bottom: 25px;
+	}
+	
+	#footer {
+		display: none;
+		box-sizing: border-box;
+		background-color: transparent;
+		background-image: url('/assets/images/footer.png');
+		height: 50px;
+		width: 100%;
+		position: fixed;
+		bottom: 0;
+		left: 0;
+		padding: 5px;
+		text-align: center;
+		color: gray;
+		padding-top: 25px;
+	}
+	
+	nav {
+		display: inline-block;
+	}
+	
+	.touch nav {
+		display: none;
+	}
+	
+	a {
+		color: gray;
+		text-decoration: none;
+		cursor: pointer;
+	}
+	a:hover {
+		color: white;
+	}
+	
+	mark {
+		background: none;
+		color: white;
+	}
+	
+	.cursor {
+		color: red;
+	}
+	
+	.cursor.yourturn {
+		color: white;
+	}
+	
+	.error {
+		color: red;
+	}
+	
+	#incentive {
+		position: fixed;
+	}
+	
+	#social {
+		position: fixed;
+		top: 10px;
+		right: 10px;
+	}
+	
+	#alertWrapper {
+		position: fixed;
+		width: 100%;
+		z-index:  3;
+	}
+	
+	#alert {
+		box-sizing:  border-box;
+		background: black;
+		background-color:  rgba(0,0,0,0.95);
+		width: 100%;
+		max-width: 480px;
+		margin:  auto;
+		top: 0;
+		text-align: center;
+		padding: 15px;
+		cursor: pointer;
+	}
+	
+	#sharer {
+		display: none;
+		width:  100%;
+		max-width:  480px;
+		margin:  auto;
+		margin: 25px auto;
+		/*position:  fixed;*/
+	}
+	
+	#sharer span {
+		display:  inline-block;
+		cursor: pointer;
+		padding:  5px;
+		margin-top:  5px;
+		border: 1px dashed gray;
+	}
+	
+	#close {
+		float:  right;
+	}
+	
+	#excerpt {
+		box-sizing: border-box;
+		padding: 5px;
+		border: 1px dashed gray;
+		width:  100%;
+		height:  100px;
+		background: black;
+		outline:  none;
+	}
+	
+	/* HELPER */
+	
+	.hidden { display: none; }
+	.pointer { cursor: pointer; }
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
