@@ -7,10 +7,10 @@
 		
 		<title>x million monkeys [alpha]</title>
 		
-		<link id="favicon" rel="icon" type="image/png" href="/assets/images/monkey0.png">
+		<link id="favicon" rel="icon" type="image/png" href="/monkey0.png">
 		
-		<link rel="stylesheet" type="text/css" href="/assets/css/xmm.css">
-		<link rel="stylesheet" type="text/css" href="/assets/css/tooltipster.css" />
+		<link rel="stylesheet" type="text/css" href="/xmm.css">
+		<link rel="stylesheet" type="text/css" href="/tooltipster.css" />
 		
 		<meta property="og:type" content="website">
 		<meta property="og:title" content="x million monkeys">
@@ -42,10 +42,10 @@
 			
 			<header>
 				<span id="social">
-					<a href="https://twitter.com/search?q=%23xmm" target="_blank"><img src="/assets/images/twitter.png" title="Select text to share it with #xmm on Twitter" width=20 style="vertical-align: text-bottom;"></a>
-					<a href="https://www.facebook.com/xmillionmonkeys" target="_blank"><img src="/assets/images/facebook.png" title="Follow us on Facebook !" width=20 style="vertical-align: text-bottom;"></a>
+					<a href="https://twitter.com/search?q=%23xmm" target="_blank"><img src="/twitter.png" title="Select text to share it with #xmm on Twitter" width=20 style="vertical-align: text-bottom;"></a>
+					<a href="https://www.facebook.com/xmillionmonkeys" target="_blank"><img src="/facebook.png" title="Follow us on Facebook !" width=20 style="vertical-align: text-bottom;"></a>
 				</span>
-				<span id="logo"><img id="logo_image" src="/assets/images/monkey0.png" data-goto="route" class="goto pointer" title="Home Page (Ctrl+H)" width=32 style="float: left; margin-right: 7px;"></span>
+				<span id="logo"><img id="logo_image" src="/monkey0.png" data-goto="route" class="goto pointer" title="Home Page (Ctrl+H)" width=32 style="float: left; margin-right: 7px;"></span>
 				<span id="x">x</span> million monkeys<br>[alpha<span id="app_version"></span>] </span>
 			</header>
 			
@@ -78,13 +78,13 @@
 			
 			<div id="sounds">
 				<audio id="key">
-					<source src="/assets/sounds/key.wav" type="audio/wav">
+					<source src="/key.wav" type="audio/wav">
 				</audio>
 				<audio id="error">
-					<source src="/assets/sounds/error.wav" type="audio/wav">
+					<source src="/error.wav" type="audio/wav">
 				</audio>
 				<audio id="silence">
-					<source src="/assets/sounds/silence.mp3" type="audio/mp3">
+					<source src="/silence.mp3" type="audio/mp3">
 				</audio>
 			</div>
 		
@@ -92,12 +92,13 @@
 		
 		<script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
 		<script src="//cdnjs.cloudflare.com/ajax/libs/modernizr/2.8.1/modernizr.min.js"></script>
-		<script src="/assets/js/jquery.hotkey.js"></script>
-		<script src="/assets/js/jquery.tooltipster.min.js"></script>
-		<script src="/assets/js/jquery.touchSwipe.1.6.min.js"></script>
-		<script src="/assets/js/smooth-scroll.4.5.js"></script>
+		<script src="/jquery.hotkey.js"></script>
+		<script src="/jquery.tooltipster.min.js"></script>
+		<script src="/jquery.touchSwipe.1.6.min.js"></script>
+		<script src="/smooth-scroll.4.5.js"></script>
+		<script src="/socket.io/socket.io.js"></script>
 		
-		<script src="/assets/js/xmm-0.22.3.js"></script>
+		<script src="/xmm-0.5.js"></script>
 		
 		<script>
 			(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
@@ -109,10 +110,6 @@
 			ga('send', 'pageview');
 		</script>
 		
-		<script src="/socket.io/socket.io.js"></script>
-		<script>
-		  var socket = io();
-		</script>
 		
 	</body>
 </html>

@@ -15,7 +15,7 @@
 	header {
 		box-sizing: border-box;
 		background-color: transparent;
-		background-image: url('/assets/images/header.png');
+		background-image: url('/header.png');
 		/*background-position: bottom center;*/
 		position: fixed;
 		top: 0;
@@ -106,7 +106,7 @@
 		display: none;
 		box-sizing: border-box;
 		background-color: transparent;
-		background-image: url('/assets/images/footer.png');
+		background-image: url('/footer.png');
 		height: 50px;
 		width: 100%;
 		position: fixed;

@@ -1,10 +1,6 @@
 (function() {
 	
-	app_version = '0.22.3';
-	xmm_app = 'http://monkeys.nokto.net/';
-	
-	xmm_server_host = '46.105.18.136';
-	xmm_server_port = '11345';
+	app_version = '0.5';
 	
 	page_id = 0;
 	sound = 0; // Sound initialized ?
@@ -34,11 +30,45 @@
 	// Show input field placeholder on touch devices
 	$('html.touch #input').attr('placeholder', 'Touch here to write');
 	
+	var socket = io();
+	
+	// Load ui
+	$('#alert').hide();
+	$('#ui').fadeIn();
+	
+	// Ask for pages on load
+	socket.emit('getPages');
+	socket.on('pages', function(pages) {
+		
+		$('#pages').html(''); // Delete previous pages
+		
+		var pages_html = '';
+		for (key in pages)
+		{
+			p = pages[key];
+			pages_html += '<article id="page_'+p.page_id+'" class="page hidden" data-id="'+p.page_id+'" data-version="'+p.page_version+'" data-last_monkey="'+p.page_last_player+'">' +
+								'<p><span class="page_content">'+p.page_content+'</span><span class="cursor"> _</span></p>' +
+								'<p class="inputs"></p>' +
+							'</article>';
+		}
+		$('#pages').append(pages_html);
+		goToPage(1);
+		
+		// If page is defined in url, go to page, else ask for route
+		/*
+if (default_page) goToPage(default_page);
+		else send({ method: 'get', type: 'route' });
+*/
+	});
+	
 	// Connect to the server
-	function connect() {
+	/*
+function connect() {
 		_alert('Connecting...');
 		
-		websocket = new WebSocket('ws://'+xmm_server_host+':'+xmm_server_port+'/');
+		var socket = io();
+		
+		socket.emit('get', 'pages');
 		
 		// Connection successful
 		websocket.onopen = function(e)
@@ -188,6 +218,7 @@
 		};
 	}
 	connect();
+*/
 	
 	
 	$(window).load(function() {
@@ -358,7 +389,7 @@
 	}
 	
 	// Send message to the server
-	function send (message)
+	function send(message)
 	{
 		if (!stop)
 		{
