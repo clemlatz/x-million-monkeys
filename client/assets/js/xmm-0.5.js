@@ -351,17 +351,19 @@ function connect() {
 		if (id && id != 0)
 		{
 			window.history.pushState(null, "xmm", '/'+id);
-			//window.scrollTo(0, 0);
 			$('.page.current').removeClass('current').hide();
 			$('#page_'+id).addClass('current').show();
 			page_id = id;
 			$('#input').val('').attr('data-version', $('#page_'+id).attr('data-version')); // Empty input and set version
-			send({ method: 'post', type: 'say', value: { input: '', page_id: ""+page_id+"" } }); // Clear input preview from other clients
+			socket.emit('say',{ input: '', page_id: ""+page_id+"" }); // Clear input preview from other clients
 			scrollToInput();
 			updateUserRight(); // Can user Write 
-			send({ method: 'post', type: 'move', value: { from: ""+page_id+"", to: ""+id+"" } }); // Notify server
+			socket.emit('move', { from: ""+page_id+"", to: ""+id+"" }); // Notify server
 		}
-		//else send({ method: 'get', type: 'route' });
+		else 
+		{
+			socket.emit('route');
+		}
 	}
 	
 	// Can user write ?
@@ -370,14 +372,14 @@ function connect() {
 		if (token != $('.page.current').attr('data-last_monkey'))
 		{
 			$('.current .cursor').addClass('yourturn');
-			$('#favicon').attr('href','/assets/images/monkey1.png');
-			$('#logo_image').attr('src','/assets/images/monkey1.png');
+			$('#favicon').attr('href','/monkey1.png');
+			$('#logo_image').attr('src','/monkey1.png');
 		}
 		else
 		{
 			$('.current .cursor').removeClass('yourturn');
-			$('#favicon').attr('href','/assets/images/monkey0.png');
-			$('#logo_image').attr('src','/assets/images/monkey0.png');
+			$('#favicon').attr('href','/monkey0.png');
+			$('#logo_image').attr('src','/monkey0.png');
 		}
 	}
 	

@@ -22,6 +22,11 @@ app.use(express.static(__dirname+'/client/assets/images'));
 app.use(express.static(__dirname+'/client/assets/js'));
 app.use(express.static(__dirname+'/client/assets/sounds'));
 
+// Other pages
+app.get('/:num', function(req, res){
+  	res.sendFile(__dirname+'/client/index.html');
+});
+
 // Home page
 app.get('/', function(req, res){
   	res.sendFile(__dirname+'/client/index.html');
