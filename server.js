@@ -5,7 +5,7 @@ var io = require('socket.io')(http);
 var mysql = require('mysql');
 var config = require('./config');
 
-var version = '0.23';
+var version = '0.23a';
 
 // DB Connection
 var sql = mysql.createConnection(config.db);
@@ -78,13 +78,12 @@ io.on('connection', function(socket) {
 					'update': null,
 				}
 			
-				console.log('Creating new monkey for token: '+token);
 				sql.query("INSERT INTO `monkeys`(`monkey_token`, `monkey_ip`, `page_id`, `monkey_online`, `monkey_seen`, `monkey_insert`) VALUES(?, ?, ?, ?, NOW(), NOW())", [monkey.token, monkey.ip, monkey.page_id, monkey.online], function(err, info) {
 					if (err) throw err;
 					
 					monkey.id = info.insertId;
-					
-					connected(socket, monkey)
+					console.log('Created new monkey (#'+monkey.id+') for token: '+token);
+					connected(socket, monkey);
 					
 				});
 			}
@@ -174,6 +173,18 @@ function connected(socket, monkey) {
 			});
 			
 		});
+	});
+	
+	// Monkey saying
+	socket.on('say', function(data) {
+		
+/* 		console.log("Monkey #"+monkey.id+" saying "+data.input+" on page "+data.page_id+"."); */
+		
+		var response = { page: data.page_id, monkey: monkey.token, input: data.input }
+		
+		socket.broadcast.emit('say', response);
+		socket.emit('say', response);
+		
 	});
 	
 }

@@ -72,8 +72,7 @@ if (document.cookie.indexOf("monkey_token") == -1)
 	});
 	
 	// Connect to the server
-	/*
-function connect() {
+	function connect() {
 		_alert('Connecting...');
 		
 		var socket = io();
@@ -228,7 +227,6 @@ function connect() {
 		};
 	}
 	connect();
-*/
 	
 	
 	$(window).load(function() {

@@ -1,6 +1,6 @@
 xmm = {
 	app: {
-		version: 0.23
+		version: '0.23a'
 	},
 	
 	currentPage: 0,
@@ -44,6 +44,11 @@ xmm = {
 		xmm.socket = socket;
 		
 		xmm.socket.emit('version', xmm.app.version);
+		
+		xmm.socket.on('disconnect', function() {
+/* 			xmm.error('Disconnected!'); */
+			throw 'Disconnected!';
+		});
 		
 		xmm.socket.on('alert', function(msg) {
 			xmm.error(msg);
@@ -92,6 +97,30 @@ xmm = {
 					
 				});
 				
+				xmm.socket.on('say', function(data) {
+					
+					var input_id = 'input_'+data.page+'_'+data.monkey;
+					
+					// If input is empty, remove span
+					if (data.input == '') 
+					{
+						$('#'+input_id).remove();
+					}
+					
+					// If span does not exist, create it
+					else if ($('#'+input_id).length == 0)
+					{
+						$('#page_'+data.page+' .inputs').append(' <span id="'+input_id+'" class="saying">'+data.input+'</span>');
+						if (data.monkey == xmm.getToken()) $('#'+input_id).addClass('my_input');
+					}
+					
+					// Else update it
+					else 
+					{
+						$('#'+input_id).html(data.input); // Else update span
+					}
+				});
+				
 				xmm.loadEvents();
 				
 			});
@@ -110,6 +139,33 @@ xmm = {
 			else if (new_page != 0) {
 				xmm.goToPage(new_page);
 			}
+		}).removeClass('event');
+		
+		// User input
+		$('#input.event').keyup( function(e) {
+			
+			if ($('#input').val() == '') // if input is emptied, update input version
+			{
+				$('#invite').text('Write the next word:');
+				$('#input').attr('data-version', $('.page.current').attr('data-version'));
+			}
+			else if (e.keyCode == 13) // enter key & field not empty : write (send input for good)
+			{
+				$('#invite').slideUp();
+				xmm.socket.emit('write', { input: $('#input').val(), page: xmm.currentPage, version: $('#input').attr('data-version') });
+				$('#input').val('');
+			}
+			else if (e.keyCode == 32) // Space bar
+			{
+				$('#invite').text('Now, press enter to send your word.');
+			}
+			
+			// Say : input may be empty, key is not enter, ctrl or cmd
+			if (e.keyCode != 13 && e.keyCode != 17 && e.keyCode != 91)
+			{
+				xmm.socket.emit('say', { input: $('#input').val(), page_id: xmm.currentPage });
+			}
+		
 		}).removeClass('event');
 		
 	},
