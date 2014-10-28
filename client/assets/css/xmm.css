@@ -103,7 +103,6 @@
 	}
 	
 	#footer {
-		display: none;
 		box-sizing: border-box;
 		background-color: transparent;
 		background-image: url('/footer.png');

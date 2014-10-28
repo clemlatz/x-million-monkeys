@@ -1,6 +1,6 @@
 (function() {
 	
-	app_version = '0.5';
+	app_version = '0.22';
 	
 	page_id = 0;
 	sound = 0; // Sound initialized ?
@@ -15,7 +15,8 @@
 	}
 	
 	// Get token if not set
-	if (document.cookie.indexOf("monkey_token") == -1)
+	/*
+if (document.cookie.indexOf("monkey_token") == -1)
 	{
 		token = "";
 		var chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";	
@@ -23,6 +24,7 @@
 		setcookie('monkey_token', token, 365);
 	}
 	else token = getcookie('monkey_token');
+*/
 	
 	// Set current page from url
 	default_page = window.location.pathname.replace('/','');
@@ -35,6 +37,14 @@
 	// Load ui
 	$('#alert').hide();
 	$('#ui').fadeIn();
+	
+	// Get monkey token
+	socket.emit('getToken');
+	socket.on('token', function(token) {
+		
+		localStorage.
+		
+	});
 	
 	// Ask for pages on load
 	socket.emit('getPages');
@@ -52,13 +62,13 @@
 							'</article>';
 		}
 		$('#pages').append(pages_html);
-		goToPage(1);
 		
 		// If page is defined in url, go to page, else ask for route
 		/*
-if (default_page) goToPage(default_page);
-		else send({ method: 'get', type: 'route' });
-*/
+			if (default_page) goToPage(default_page);
+			else send({ method: 'get', type: 'route' });
+		*/
+		goToPage(1);
 	});
 	
 	// Connect to the server
@@ -350,10 +360,14 @@ function connect() {
 	{
 		if (id && id != 0)
 		{
+			// Update address bar
 			window.history.pushState(null, "xmm", '/'+id);
+			
+			// Hide current page & show new one
 			$('.page.current').removeClass('current').hide();
 			$('#page_'+id).addClass('current').show();
-			page_id = id;
+			
+			
 			$('#input').val('').attr('data-version', $('#page_'+id).attr('data-version')); // Empty input and set version
 			socket.emit('say',{ input: '', page_id: ""+page_id+"" }); // Clear input preview from other clients
 			scrollToInput();
