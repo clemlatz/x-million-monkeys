@@ -189,8 +189,6 @@ function connected(socket, monkey) {
 	// Monkey writing
 	socket.on('write', function(data) {
 		
-		console.log(data);
-		
 		if (checkInput(data))
 		{
 		
