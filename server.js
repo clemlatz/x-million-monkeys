@@ -144,7 +144,7 @@ function connected(socket, monkey) {
 	
 	// Monkey changing page
 	socket.on('move', function(move) {
-		console.log("Monkey #"+monkey.id+" moving from "+move.from+" to "+move.to+".");
+		
 		sql.query('UPDATE `monkeys` SET `page_id` = ? WHERE `monkey_id` = ?', [move.to, monkey.id], function(err, info) {
 			if (err) throw err;
 			updateCount(socket);
@@ -168,6 +168,7 @@ function connected(socket, monkey) {
 						if (rows.length) page.prev = rows[0].prev;
 						
 						socket.emit('page', page);
+						console.log("Monkey #"+monkey.id+" moved from "+move.from+" to "+move.to+".");
 					});
 				});
 			});
@@ -178,12 +179,56 @@ function connected(socket, monkey) {
 	// Monkey saying
 	socket.on('say', function(data) {
 		
-/* 		console.log("Monkey #"+monkey.id+" saying "+data.input+" on page "+data.page_id+"."); */
-		
 		var response = { page: data.page_id, monkey: monkey.token, input: data.input }
 		
 		socket.broadcast.emit('say', response);
 		socket.emit('say', response);
+		
+	});
+	
+	// Monkey writing
+	socket.on('write', function(data) {
+		
+		console.log(data);
+		
+		if (checkInput(data))
+		{
+		
+			var input = ' '+data.input;
+		
+			sql.query('SELECT * FROM `pages` WHERE `page_id` = ? LIMIT 1', [data.page], function(err, rows, fields) {
+				if (err) throw err;
+				if (rows.length) p = rows[0];
+				
+				var page = {
+					'id': p.page_id,
+					'version': p.page_version+1,
+					'content': p.page_content,
+				}
+			
+				// Create new input
+				sql.query('INSERT INTO `inputs`(`monkey_token`, `page_id`, `page_version`, `input_content`, `input_status`, `input_insert`) VALUES(?, ?, ?, ?, 1, NOW())', 
+					[monkey.token, page.id, page.version, input], function(err, rows, fields) {
+					if (err) throw err;
+					
+					// Update page content
+					sql.query('UPDATE `pages` SET `page_content` = ?, `page_last_player` = ?, `page_version` = ?, `page_update` = NOW() WHERE `page_id` = ? LIMIT 1', 
+						[page.content+input, monkey.token, page.version, page.id], function(err, rows, fields) {
+						if (err) throw err;
+						
+						var response = { page: { id: page.id, version: page.version }, monkey: monkey.token, input: input }
+						
+						socket.broadcast.emit('write', response);
+						socket.emit('write', response);
+						
+						console.log("Monkey #"+monkey.id+" wrote '"+input+"' on page "+page.id+".");
+					
+					});
+					
+				});
+						
+			});
+		}
 		
 	});
 	
@@ -198,6 +243,10 @@ function updateCount(socket) {
 	});
 }
 
+// Input check
+function checkInput(data) {
+	return true;
+}
 
 
 

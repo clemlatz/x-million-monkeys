@@ -47,6 +47,7 @@ xmm = {
 		
 		xmm.socket.on('disconnect', function() {
 /* 			xmm.error('Disconnected!'); */
+			window.location.reload();
 			throw 'Disconnected!';
 		});
 		
@@ -97,6 +98,7 @@ xmm = {
 					
 				});
 				
+				// Received input preview
 				xmm.socket.on('say', function(data) {
 					
 					var input_id = 'input_'+data.page+'_'+data.monkey;
@@ -119,6 +121,33 @@ xmm = {
 					{
 						$('#'+input_id).html(data.input); // Else update span
 					}
+				});
+				
+				// Received page update
+				xmm.socket.on('write', function(data) {
+					
+					// Update page version and last monkey
+					$('#page_'+data.page.id).attr('data-version', data.page.version).attr('data-last_monkey', data.monkey.token);
+					
+					// Update page content with new input
+					$('#page_'+data.page.id+' .page_content').append(data.input);
+					
+					// Remove all current inputs
+					$('#page_'+data.page.id+' .saying').fadeOut({
+						complete: function() { $(this).remove(); }
+					});
+					
+					// Update theme word count
+/* 					$('#theme').html('Current theme: &laquo; '+d.body.page_theme+' &raquo; (for another <span id="theme_words">'+d.body.page_theme_words+'</span> words)'); */
+					
+					 // If current page
+					if (xmm.currentPage == data.page.id)
+					{
+						if ($('#input').val() == '') $('#input').attr('data-version', data.page.version); // update input version only if input is empty
+						xmm.playSound('key'); // play key stroke page
+					}
+/* 					updateUserRight(); */
+					
 				});
 				
 				xmm.loadEvents();
@@ -239,11 +268,18 @@ xmm = {
 		});
 	},
 	
+	// Play sound
+	playSound: function(sound, mute) {
+		if (mute) $('#'+sound)[0].volume = 0;
+		else $('#'+sound)[0].volume = 1;
+		$('#'+sound)[0].play();
+	},
+	
 	// Plural
 	s: function(i) {
 		if (i > 1) return 's';
 		else return '';
-	}
+	},
 	
 }
 
