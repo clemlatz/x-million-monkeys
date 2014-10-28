@@ -69,13 +69,9 @@ xmm = {
 				});
 				
 				xmm.socket.on('monkeys', function(monkeys) {
-				
-					console.log('monkey count');
-				
 					var total = 0;
 					for (key in monkeys)
 					{
-						console.log(xmm.currentPage);
 						if (xmm.currentPage == monkeys[key].page_id)
 						{
 							$('#page_monkeys').text(monkeys[key].count);
@@ -87,6 +83,17 @@ xmm = {
 					
 				});
 				
+				// Received page infos
+				xmm.socket.on('page', function(page) {
+					
+					$('#next_page').attr('data-goto', page.next);
+					$('#prev_page').attr('data-goto', page.prev);
+					$('#theme').html('Current theme: &laquo; '+page.theme+' &raquo; (for another <span id="theme_words">'+page.theme_words+'</span> word'+xmm.s(page.theme_words)+')');
+					
+				});
+				
+				xmm.loadEvents();
+				
 			});
 			
 		});
@@ -96,7 +103,14 @@ xmm = {
 	
 	loadEvents: function() {
 		
-		
+		// Mouse navigation
+		$('.goto.event').click( function() {
+			var new_page = $(this).attr('data-goto');
+			if (new_page == 'route') send({ method: 'get', type: 'route' });
+			else if (new_page != 0) {
+				xmm.goToPage(new_page);
+			}
+		}).removeClass('event');
 		
 	},
 	
@@ -118,7 +132,7 @@ xmm = {
 			
 			$('#input').val('').attr('data-version', $('#page_'+id).attr('data-version')); // Empty input and set version
 /* 			socket.emit('say',{ input: '', page_id: ""+page_id+"" }); // Clear input preview from other clients */
-/* 			scrollToInput(); */
+			xmm.scrollToInput();
 /* 			updateUserRight(); // Can user Write  */
 			xmm.currentPage = id;
 		}
@@ -159,6 +173,21 @@ xmm = {
 		return localStorage['token'];
 		
 	},
+	
+	scrollToInput: function() {
+		smoothScroll.animateScroll(null, '#input', {
+			speed: 500,
+			offset: 250,
+			easing: 'easeOutQuint',
+			callbackAfter: function() { $('#input').focus(); }
+		});
+	},
+	
+	// Plural
+	s: function(i) {
+		if (i > 1) return 's';
+		else return '';
+	}
 	
 }
 

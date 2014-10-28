@@ -149,6 +149,30 @@ function connected(socket, monkey) {
 		sql.query('UPDATE `monkeys` SET `page_id` = ? WHERE `monkey_id` = ?', [move.to, monkey.id], function(err, info) {
 			if (err) throw err;
 			updateCount(socket);
+			
+			sql.query('SELECT `page_id`, `page_theme`, `page_theme_words` FROM `pages` WHERE `page_id` = ? LIMIT 1', [move.to], function(err, rows, fields) {
+				if (err) throw err;
+				
+				var p = rows[0];
+				var page = {
+					'id': p.page_id,
+					'theme': p.page_theme,
+					'theme_words': p.page_theme_words,
+				}
+					
+				sql.query('SELECT MIN(`page_id`) AS `next` FROM `pages` WHERE `page_id` > ? LIMIT 1', [move.to], function(err, rows, fields) {
+					if (err) throw err;
+					if (rows.length) page.next = rows[0].next;
+					
+					sql.query('SELECT MAX(`page_id`) AS `prev` FROM `pages` WHERE `page_id` < ? LIMIT 1', [move.to], function(err, rows, fields) {
+						if (err) throw err;
+						if (rows.length) page.prev = rows[0].prev;
+						
+						socket.emit('page', page);
+					});
+				});
+			});
+			
 		});
 	});
 	
