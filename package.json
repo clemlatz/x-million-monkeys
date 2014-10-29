@@ -1,12 +1,14 @@
 {
   "name": "x-million-monkeys",
   "description": "X Million Monkeys",
-  "version": "0.23",
+  "version": "0.23.0",
   "main": "server.js",
   "private": true,
   "dependencies": {
     "express": "4.x",
     "mysql": "^2.5.1",
-    "socket.io": "^1.1.0"
+    "socket.io": "^1.1.0",
+    "strftime": "^0.8.2",
+    "validator": "^3.22.1"
   }
 }

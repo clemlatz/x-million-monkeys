@@ -3,18 +3,33 @@ xmm = {
 		version: '0.23a'
 	},
 	
-	currentPage: 0,
+	currentPage: 1,
 	
 	debug: function(msg) {
 		console.log(msg);
 	},
 	
+	alert: function(msg) {
+		if (typeof alertTimeout !== 'undefined') clearTimeout(alertTimeout);
+		var alert_y = $(window).height() / 2 - $('#alert').height() / 2;
+		$('#alertWrapper').css('top', alert_y);
+		$('#alert').html(alert).show();
+		if (timeout > 0) alertTO = setTimeout( function() { $('#alert').fadeOut({ complete: function() { $(this).html(''); } }); }, timeout * 1000);
+	},
+	
 	error: function(msg) {
-		alert(msg);
+		xmm.playSound('error');
+		$('#ui').fadeOut();
+		playSound('error');
+		debug('Error: '+error);
+		xmm.alert('<span class="error">'+error+'</span>', timeout);
 	},
 	
 	start: function() {
 		xmm.debug('Starting XMM Client v'+xmm.app.version);
+		
+		// Get current page from url
+		xmm.currentPage = window.location.pathname.replace('/','');
 		
 		// Check websockets & localstorage availability
 		if (!Modernizr.websockets || !Modernizr.localstorage)
@@ -39,9 +54,7 @@ xmm = {
 		
 		var token = xmm.getToken();
 		
-		socket = io();
-		
-		xmm.socket = socket;
+		xmm.socket = io();
 		
 		xmm.socket.emit('version', xmm.app.version);
 		
@@ -71,7 +84,7 @@ xmm = {
 					localStorage['pages'] = JSON.stringify(pages);
 					localStorage['pages_updated'] = new Date();
 					xmm.renderPages(pages);
-					xmm.goToPage(1);
+					xmm.goToPage(xmm.currentPage);
 				});
 				
 				xmm.socket.on('monkeys', function(monkeys) {
@@ -137,14 +150,14 @@ xmm = {
 						complete: function() { $(this).remove(); }
 					});
 					
-					// Update theme word count
-/* 					$('#theme').html('Current theme: &laquo; '+d.body.page_theme+' &raquo; (for another <span id="theme_words">'+d.body.page_theme_words+'</span> words)'); */
+					// Update theme & word count
+					$('#theme').html('Current theme: &laquo; '+data.page.theme+' &raquo; (for another <span id="theme_words">'+data.page.theme_words+'</span> word'+xmm.s(data.page.theme_words)+')');
 					
 					 // If current page
 					if (xmm.currentPage == data.page.id)
 					{
 						if ($('#input').val() == '') $('#input').attr('data-version', data.page.version); // update input version only if input is empty
-						xmm.playSound('key'); // play key stroke page
+						xmm.playSound('key');
 					}
 /* 					updateUserRight(); */
 					
@@ -216,10 +229,13 @@ xmm = {
 			$('#page_'+id).addClass('current').show();
 			
 			$('#input').val('').attr('data-version', $('#page_'+id).attr('data-version')); // Empty input and set version
-/* 			socket.emit('say',{ input: '', page_id: ""+page_id+"" }); // Clear input preview from other clients */
 			xmm.scrollToInput();
 /* 			updateUserRight(); // Can user Write  */
 			xmm.currentPage = id;
+		}
+		else
+		{
+			xmm.goToPage(1);
 		}
 	},
 	

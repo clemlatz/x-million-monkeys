@@ -4,6 +4,8 @@ var http = require('http').Server(app);
 var io = require('socket.io')(http);
 var mysql = require('mysql');
 var config = require('./config');
+var strftime = require('strftime');
+var validator = require('validator');
 
 var version = '0.23a';
 
@@ -14,7 +16,7 @@ sql.connect(function(err) {
 		console.error('error connecting: ' + err.stack);
 		return;
 	}
-	console.log('Connected to MySQL on '+config.db.host+' as id ' + sql.threadId);
+	log('Connected to MySQL on '+config.db.host+' as id ' + sql.threadId);
 });
 sql.query('USE xmm');
 
@@ -39,7 +41,7 @@ app.get('/', function(req, res){
 
 // Socket connect
 io.on('connection', function(socket) {
-	console.log('New user from: '+socket.handshake.address);
+	log('New user from: '+socket.handshake.address);
 	
 	// Check version
 	socket.on('version', function(local_version) {
@@ -58,7 +60,7 @@ io.on('connection', function(socket) {
 	// Handshake
 	socket.on('handshake', function(token) {
 		
-		console.log('Handshake with token: '+token);
+		log('Handshake with token: '+token);
 		
 		// Look for monkey with this token
 		sql.query('SELECT * FROM `monkeys` WHERE `monkey_token` = ?', [token], function(err, rows, fields) {
@@ -82,7 +84,7 @@ io.on('connection', function(socket) {
 					if (err) throw err;
 					
 					monkey.id = info.insertId;
-					console.log('Created new monkey (#'+monkey.id+') for token: '+token);
+					log('Created new monkey (#'+monkey.id+') for token: '+token);
 					connected(socket, monkey);
 					
 				});
@@ -104,7 +106,7 @@ io.on('connection', function(socket) {
 				sql.query('UPDATE `monkeys` SET `monkey_online` = 1, monkey_seen = NOW() WHERE `monkey_id` = ?', [monkey.id], function(err, info) {
 					if (err) throw err;
 					
-					console.log('Retrieved a monkey with token: '+token);
+					log('Retrieved a monkey with token: '+token);
 					
 					connected(socket, monkey);
 				});
@@ -122,7 +124,7 @@ function connected(socket, monkey) {
 	socket.emit('connected');
 	
 	socket.on('disconnect', function() {
-		console.log("Monkey #"+monkey.id+" disconnected.");
+		log("Monkey #"+monkey.id+" disconnected.");
 		sql.query('UPDATE `monkeys` SET `monkey_online` = 0 WHERE `monkey_id` = ?', [monkey.id], function(err, info) {
 			if (err) throw err;
 			updateCount(socket);
@@ -133,7 +135,7 @@ function connected(socket, monkey) {
 	// Get pages
 	socket.on('getPages', function(date) {
 		
-		console.log("Monkey #"+monkey.id+" asked for pages updated after "+date);
+		log("Monkey #"+monkey.id+" asked for pages updated after "+date);
 		sql.query('SELECT * FROM `pages`', [date], function(err, rows, fields) {
 			if (err) throw err;
 			socket.emit('pages', rows);
@@ -168,7 +170,7 @@ function connected(socket, monkey) {
 						if (rows.length) page.prev = rows[0].prev;
 						
 						socket.emit('page', page);
-						console.log("Monkey #"+monkey.id+" moved from "+move.from+" to "+move.to+".");
+						log("Monkey #"+monkey.id+" moved from "+move.from+" to "+move.to+".");
 					});
 				});
 			});
@@ -179,7 +181,11 @@ function connected(socket, monkey) {
 	// Monkey saying
 	socket.on('say', function(data) {
 		
-		var response = { page: data.page_id, monkey: monkey.token, input: data.input }
+		input = formatInput(data.input);
+		
+/* 		log("Monkey saying '"+data.input+"'"); */
+		
+		var response = { page: data.page_id, monkey: monkey.token, input: input }
 		
 		socket.broadcast.emit('say', response);
 		socket.emit('say', response);
@@ -189,48 +195,101 @@ function connected(socket, monkey) {
 	// Monkey writing
 	socket.on('write', function(data) {
 		
-		if (checkInput(data))
-		{
+		var input = formatInput(data.input);
 		
-			var input = ' '+data.input;
-		
-			sql.query('SELECT * FROM `pages` WHERE `page_id` = ? LIMIT 1', [data.page], function(err, rows, fields) {
-				if (err) throw err;
-				if (rows.length) p = rows[0];
-				
-				var page = {
-					'id': p.page_id,
-					'version': p.page_version+1,
-					'content': p.page_content,
-				}
+		sql.query('SELECT `page_id`, `page_version`, `page_content`, `page_last_player`, `page_theme`, `page_theme_words` FROM `pages` WHERE `page_id` = ? LIMIT 1', [data.page], function(err, rows, fields) {
+			if (err) throw err;
+			if (rows.length) p = rows[0];
 			
+			var page = {
+				'id': p.page_id,
+				'version': p.page_version,
+				'content': p.page_content,
+				'last_player': p.page_last_player,
+				'theme': p.page_theme,
+				'theme_words': p.page_theme_words,
+			}
+			
+			// Check input
+			if (input.length > 30)
+			{
+				socket.emit('alert', 'You may not enter a word longer than 30 characters.');
+				io.sockets.emit('say', { page: page.id, monkey: monkey.token, input: "" });
+				log("Monkey #"+monkey.id+"'s input ("+input+") is longer than 30 chars.");
+			}
+			else if (m = /\/|\\|\||@|#|\[|]|{|}|\^|http|www|\.com|\.fr|\.net/.exec(input))
+			{
+				socket.emit('alert', 'Your input contains forbidden characters ('+m[0]+').');
+				io.sockets.emit('say', { page: page.id, monkey: monkey.token, input: "" });
+				log("Monkey #"+monkey.id+"'s input ("+input+") contains forbidden chars:"+m[0]);
+			}
+			else if (page.version != data.version)
+			{
+				socket.emit('alert', 'Too slow ! Someone has sent something since you start typing. You should check it and try again.');
+				io.sockets.emit('say', { page: page.id, monkey: monkey.token, input: "" });
+				log("Monkey #"+monkey.id+"' was too slow.");
+			}
+			else if (page.last_player == monkey.token)
+			{
+				socket.emit('alert', 'Too quick ! You wrote the last word of this page. You have to wait until someone else enters something.');
+				io.sockets.emit('say', { page: page.id, monkey: monkey.token, input: "" });
+				log("Monkey #"+monkey.id+"' was too quick.");
+			}
+			else
+			{
+				// Increment page version
+				page.version++;
+				
+				// Update theme word count
+				page.theme_words -= input.split(' ').length - 1;
+		
+				// Changing theme if no more word
+				if (page.theme_words < 1)
+				{
+					page.theme_words = 30; // Get the counter back to 30;
+					var words = page.content.split(' '); // Get an array with words from page content
+					
+					var themes = [];
+					for (w in words)
+					{
+						words[w] = validator.blacklist(words[w], '.!?,;::*"'); // Delete punctuation signs
+						if (words[w].length >= 5) themes.push(words[w]); // Keep only words with 5 letters or more
+					}
+					
+					page.theme = themes[Math.floor(Math.random() * themes.length)] // Choose a random word from array
+					
+					log('Changing theme to "'+page.theme+'" on page '+page.id+'.');
+				}
+				delete page.content;
+		
 				// Create new input
 				sql.query('INSERT INTO `inputs`(`monkey_token`, `page_id`, `page_version`, `input_content`, `input_status`, `input_insert`) VALUES(?, ?, ?, ?, 1, NOW())', 
 					[monkey.token, page.id, page.version, input], function(err, rows, fields) {
 					if (err) throw err;
 					
 					// Update page content
-					sql.query('UPDATE `pages` SET `page_content` = ?, `page_last_player` = ?, `page_version` = ?, `page_update` = NOW() WHERE `page_id` = ? LIMIT 1', 
-						[page.content+input, monkey.token, page.version, page.id], function(err, rows, fields) {
+					sql.query('UPDATE `pages` SET `page_content` = CONCAT(`page_content`, ?), `page_last_player` = ?, `page_version` = ?, `page_theme` = ?, `page_theme_words` = ?, `page_update` = NOW() WHERE `page_id` = ? LIMIT 1', [input, monkey.token, page.version, page.theme, page.theme_words, page.id], function(err, rows, fields) {
 						if (err) throw err;
 						
-						var response = { page: { id: page.id, version: page.version }, monkey: monkey.token, input: input }
+						var response = { page: page, monkey: monkey.token, input: input }
 						
 						socket.broadcast.emit('write', response);
 						socket.emit('write', response);
 						
-						console.log("Monkey #"+monkey.id+" wrote '"+input+"' on page "+page.id+".");
+						log("Monkey #"+monkey.id+" wrote '"+input+"' on page "+page.id+".");
 					
 					});
 					
 				});
-						
-			});
-		}
+			}
+					
+		});
 		
 	});
 	
 }
+
+
 
 // Broadcast monkey count to all monkeys
 function updateCount(socket) {
@@ -241,9 +300,32 @@ function updateCount(socket) {
 	});
 }
 
-// Input check
-function checkInput(data) {
-	return true;
+// Input format
+function formatInput(input) {
+	
+	// Trim input
+	input = input.trim();
+	
+	// Escape HTML characters
+	input = validator.escape(input);
+	
+	// Add space unless 1st character is . , - or _
+	if (!/^\.|^,|^-|^_/.test(input))
+	{
+		input = ' '+input;
+	}
+	
+	// Remove 1st character if _
+	if (/^_/.test(input))
+	{
+		input = input.substr(1);
+	}
+	
+	return input;
+}
+
+function log(log) {
+	console.log(strftime('%d %b %H:%M:%S')+' - '+log)
 }
 
 
@@ -251,5 +333,14 @@ function checkInput(data) {
 
 // Web server
 http.listen(config.server.port, function(){
-  console.log('listening on port '+config.server.port);
+  log('Web server listening on port '+config.server.port);
 });
+
+
+
+
+
+
+
+
+
