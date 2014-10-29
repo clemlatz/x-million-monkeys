@@ -8,7 +8,7 @@ var validator = require('validator');
 
 var config = require('./config');
 
-var version = '0.23';
+var version = '0.23.1';
 
 // DB Connection
 var sql = mysql.createConnection(config.db);
@@ -258,17 +258,17 @@ function connected(socket, monkey) {
 			}
 			
 			// Check input
-			if (input.length > 30)
+			if (data.input.length > 30)
 			{
 				socket.emit('alert', 'You may not enter a word longer than 30 characters.');
 				io.sockets.emit('say', { page: page.id, monkey: monkey.token, input: "" });
 				log("Monkey #"+monkey.id+"'s input ("+input+") is longer than 30 chars.");
 			}
-			else if (m = /\/|\\|\||@|#|\[|]|{|}|\^|http|www|\.com|\.fr|\.net/.exec(input))
+			else if (m = /\/|\\|\||@|#|\[|]|{|}|\^|http|www|\.com|\.fr|\.net/.exec(data.input))
 			{
 				socket.emit('alert', 'Your input contains forbidden characters ('+m[0]+').');
 				io.sockets.emit('say', { page: page.id, monkey: monkey.token, input: "" });
-				log("Monkey #"+monkey.id+"'s input ("+input+") contains forbidden chars:"+m[0]);
+				log("Monkey #"+monkey.id+"'s input ("+data.input+") contains forbidden chars:"+m[0]);
 			}
 			else if (page.version != data.version)
 			{
