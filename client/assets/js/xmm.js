@@ -3,7 +3,7 @@ xmm = {
 		version: '0.23a'
 	},
 	
-	currentPage: 1,
+	currentPage: 0,
 	
 	debug: function(msg) {
 		console.log(msg);
@@ -86,7 +86,13 @@ xmm = {
 					localStorage['pages'] = JSON.stringify(pages);
 					localStorage['pages_updated'] = new Date();
 					xmm.renderPages(pages);
-					xmm.goToPage(xmm.currentPage);
+					if (xmm.currentPage) xmm.goToPage(xmm.currentPage);
+					else xmm.socket.emit('route');
+				});
+				
+				// Received route
+				xmm.socket.on('route', function(route) {
+					xmm.goToPage(route);
 				});
 				
 				// Received monkey count

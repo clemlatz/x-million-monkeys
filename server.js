@@ -132,6 +132,52 @@ function connected(socket, monkey) {
 
 	});
 	
+	// Get route
+	socket.on('route', function() {
+		
+		log("Monkey #"+monkey.id+" asked for route.");
+		
+		sql.query('SELECT `page_id` AS `id`, COUNT(`monkey_id`) AS `count` FROM `pages` JOIN `monkeys` USING(`page_id`) WHERE `monkey_online` = 1 GROUP BY `page_id`', function(err, rows, fields) {
+			if (err) throw err;
+			
+			var route = 1, rule = 'default route';
+			
+			// Page occupation
+			var total = 0;
+			var ideal = [], crowded = [], empty = [], blank = [];
+			for (page in rows)
+			{
+				total++;
+				if (page.count >= 4) crowded.push(page.id);
+				if (page.count == 0) empty.push(page.id);
+				if (page.count < 4) ideal.push(page.id);
+			}
+			
+			// Router rules
+			if (crowded.length == total) // All pages are crowded, create a new one
+			{
+				route = 1;
+				rule = 'all page crowded (temp)';
+			}
+			else if (empty.length == total) // All pages are empty, go to page 1
+			{
+				route = 1;
+				rule = 'all pages empty';
+			}
+			else if (ideal.length) // If there is at least one ideal page, go there
+			{
+				route = ideal[0];
+				rule = 'ideal page';
+			}
+			
+			// Send route to monkey
+			socket.emit('route', route);
+			log("Monkey #"+monkey.id+" routed to page "+route+" according to rule: "+rule+".");
+			
+		});
+		
+	});
+	
 	// Get pages
 	socket.on('getPages', function(date) {
 		
