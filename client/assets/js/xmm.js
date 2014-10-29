@@ -9,19 +9,20 @@ xmm = {
 		console.log(msg);
 	},
 	
-	alert: function(msg) {
+	alert: function(msg, timeout) {
 		if (typeof alertTimeout !== 'undefined') clearTimeout(alertTimeout);
 		var alert_y = $(window).height() / 2 - $('#alert').height() / 2;
 		$('#alertWrapper').css('top', alert_y);
-		$('#alert').html(alert).show();
+		$('#alert').html(msg).show();
 		if (timeout > 0) alertTO = setTimeout( function() { $('#alert').fadeOut({ complete: function() { $(this).html(''); } }); }, timeout * 1000);
+		xmm.playSound('error');
 	},
 	
 	error: function(msg) {
 		xmm.playSound('error');
 		$('#ui').fadeOut();
-		playSound('error');
-		debug('Error: '+error);
+		xmm.playSound('error');
+		xmm.debug('Error: '+error);
 		xmm.alert('<span class="error">'+error+'</span>', timeout);
 	},
 	
@@ -65,7 +66,7 @@ xmm = {
 		});
 		
 		xmm.socket.on('alert', function(msg) {
-			xmm.error(msg);
+			xmm.alert(msg, 3);
 		});
 		
 		xmm.socket.on('uptodate', function() {
@@ -78,6 +79,7 @@ xmm = {
 				$('#alert').hide();
 				$('#ui').fadeIn();
 				
+				// Ask for pages
 				xmm.socket.emit('getPages', localStorage['pages_updated']);
 				xmm.socket.on('pages', function(pages) {
 					xmm.debug('Received '+pages.length+' pages');
@@ -87,6 +89,7 @@ xmm = {
 					xmm.goToPage(xmm.currentPage);
 				});
 				
+				// Received monkey count
 				xmm.socket.on('monkeys', function(monkeys) {
 					var total = 0;
 					for (key in monkeys)

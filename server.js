@@ -289,14 +289,14 @@ function connected(socket, monkey) {
 	
 }
 
-
-
 // Broadcast monkey count to all monkeys
 function updateCount(socket) {
 	sql.query('SELECT `page_id`, COUNT(`monkey_id`) AS `count` FROM `pages` JOIN `monkeys` USING(`page_id`) WHERE `monkey_online` = 1 GROUP BY `page_id`', function(err, rows, fields) {
 		if (err) throw err;
 		socket.emit('monkeys', rows);
 		socket.broadcast.emit('monkeys', rows);
+	
+		log('Count updated: '+rows.length+' monkeys online.');
 	});
 }
 
