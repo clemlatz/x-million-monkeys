@@ -1,8 +1,10 @@
 xmm = {
 	app: {
-		version: '0.23a'
+		version: '0.23'
 	},
 	
+	token: null,
+	adresseBarPage: 0,
 	currentPage: 0,
 	
 	debug: function(msg) {
@@ -22,15 +24,15 @@ xmm = {
 		xmm.playSound('error');
 		$('#ui').fadeOut();
 		xmm.playSound('error');
-		xmm.debug('Error: '+error);
-		xmm.alert('<span class="error">'+error+'</span>', timeout);
+		xmm.debug('Error: '+msg);
+		xmm.alert('<span class="error">'+msg+'</span>', 0);
 	},
 	
 	start: function() {
 		xmm.debug('Starting XMM Client v'+xmm.app.version);
 		
 		// Get current page from url
-		xmm.currentPage = window.location.pathname.replace('/','');
+		xmm.addressBarPage = window.location.pathname.replace('/','');
 		
 		// Check websockets & localstorage availability
 		if (!Modernizr.websockets || !Modernizr.localstorage)
@@ -48,12 +50,21 @@ xmm = {
 /* 			xmm.goToPage(1); */
 		}
 		
+		// Tooltip
+		$('[title]').tooltipster();
+		
+		// Placeholder on input for touch devices
+		$('html.touch #input').attr('placeholder', 'Touch here to write');
+		
+		// Blinking cursor
+		setInterval( function() { $('.current .cursor').toggle(); }, 600);
+		
 		xmm.connect();
 	},
 	
 	connect: function() {
 		
-		var token = xmm.getToken();
+		xmm.token = xmm.getToken();
 		
 		xmm.socket = io();
 		
@@ -65,15 +76,23 @@ xmm = {
 			throw 'Disconnected!';
 		});
 		
+		xmm.socket.on('_error', function(msg) {
+			xmm.error(msg);
+		});
+		
 		xmm.socket.on('alert', function(msg) {
 			xmm.alert(msg, 3);
+		});
+		
+		xmm.socket.on('error', function(msg) {
+			xmm.alert(msg);
 		});
 		
 		xmm.socket.on('uptodate', function() {
 		
 			$('#app_version').text(' '+xmm.app.version);
 			
-			xmm.socket.emit('handshake', token);
+			xmm.socket.emit('handshake', xmm.token);
 			xmm.socket.on('connected', function() {
 				
 				$('#alert').hide();
@@ -86,7 +105,7 @@ xmm = {
 					localStorage['pages'] = JSON.stringify(pages);
 					localStorage['pages_updated'] = new Date();
 					xmm.renderPages(pages);
-					if (xmm.currentPage) xmm.goToPage(xmm.currentPage);
+					if (xmm.addressBarPage) xmm.goToPage(xmm.addressBarPage);
 					else xmm.socket.emit('route');
 				});
 				
@@ -135,7 +154,7 @@ xmm = {
 					else if ($('#'+input_id).length == 0)
 					{
 						$('#page_'+data.page+' .inputs').append(' <span id="'+input_id+'" class="saying">'+data.input+'</span>');
-						if (data.monkey == xmm.getToken()) $('#'+input_id).addClass('my_input');
+						if (data.monkey == xmm.token) $('#'+input_id).addClass('my_input');
 					}
 					
 					// Else update it
@@ -149,7 +168,7 @@ xmm = {
 				xmm.socket.on('write', function(data) {
 					
 					// Update page version and last monkey
-					$('#page_'+data.page.id).attr('data-version', data.page.version).attr('data-last_monkey', data.monkey.token);
+					$('#page_'+data.page.id).attr('data-version', data.page.version).attr('data-last_monkey', data.monkey);
 					
 					// Update page content with new input
 					$('#page_'+data.page.id+' .page_content').append(data.input);
@@ -168,7 +187,7 @@ xmm = {
 						if ($('#input').val() == '') $('#input').attr('data-version', data.page.version); // update input version only if input is empty
 						xmm.playSound('key');
 					}
-/* 					updateUserRight(); */
+					xmm.updateUserRight();
 					
 				});
 				
@@ -191,6 +210,29 @@ xmm = {
 				xmm.goToPage(new_page);
 			}
 		}).removeClass('event');
+		
+		// Keyboard navigation
+		$(document).bind('keydown', 'Ctrl+j', function() {
+			var prev = $('#prev_page').attr('data-goto');
+			if (prev) xmm.goToPage(prev);
+		}).bind('keydown', 'Ctrl+k', function() {
+			var next = $('#next_page').attr('data-goto');
+			if (next) xmm.goToPage(next);
+		}).bind('keydown', 'Ctrl+h', function() {
+			xmm.socket.emit('route');
+		});
+		
+		// Touch navigation
+		$(document).swipe({
+			swipeRight:function() {
+				var prev = $('#prev_page').attr('data-goto');
+				if (prev) xmm.goToPage(prev);
+			},
+			swipeLeft:function() {
+				var next = $('#next_page').attr('data-goto');
+				if (next) xmm.goToPage(next);
+			}
+		});
 		
 		// User input
 		$('#input.event').keyup( function(e) {
@@ -222,6 +264,7 @@ xmm = {
 	},
 	
 	goToPage: function(id) {
+		if (id == xmm.currentPage) return;
 		if (id && id != 0)
 		{
 			xmm.debug("Going from page "+xmm.currentPage+" to page "+id+".");
@@ -239,12 +282,12 @@ xmm = {
 			
 			$('#input').val('').attr('data-version', $('#page_'+id).attr('data-version')); // Empty input and set version
 			xmm.scrollToInput();
-/* 			updateUserRight(); // Can user Write  */
+			xmm.updateUserRight(); // Can user Write 
 			xmm.currentPage = id;
 		}
 		else
 		{
-			xmm.goToPage(1);
+			xmm.socket.emit('route');
 		}
 	},
 	
@@ -291,6 +334,23 @@ xmm = {
 			easing: 'easeOutQuint',
 			callbackAfter: function() { $('#input').focus(); }
 		});
+	},
+	
+	// Can user write ?
+	updateUserRight: function()
+	{
+		if (xmm.token != $('.page.current').attr('data-last_monkey'))
+		{
+			$('.current .cursor').addClass('yourturn');
+			$('#favicon').attr('href','/monkey1.png');
+			$('#logo_image').attr('src','/monkey1.png');
+		}
+		else
+		{
+			$('.current .cursor').removeClass('yourturn');
+			$('#favicon').attr('href','/monkey0.png');
+			$('#logo_image').attr('src','/monkey0.png');
+		}
 	},
 	
 	// Play sound

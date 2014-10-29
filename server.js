@@ -3,11 +3,12 @@ var app = express();
 var http = require('http').Server(app);
 var io = require('socket.io')(http);
 var mysql = require('mysql');
-var config = require('./config');
 var strftime = require('strftime');
 var validator = require('validator');
 
-var version = '0.23a';
+var config = require('./config');
+
+var version = '0.23';
 
 // DB Connection
 var sql = mysql.createConnection(config.db);
@@ -52,7 +53,7 @@ io.on('connection', function(socket) {
 		}
 		else
 		{
-			socket.emit('alert', 'Your client (v'+local_version+') is obsolete, a new version of this app (v'+version+') is available. Please refresh the page.');
+			socket.emit('_error', 'Your client (v'+local_version+') is obsolete, a new version of this app (v'+version+') is available. Please refresh the page.');
 		}
 		
 	});
