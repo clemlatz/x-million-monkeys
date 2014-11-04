@@ -8,7 +8,7 @@ var validator = require('validator');
 
 var config = require('./config');
 
-var version = '0.23.1';
+var version = '0.23.2';
 
 // DB Connection
 var sql = mysql.createConnection(config.db);
@@ -63,7 +63,7 @@ io.on('connection', function(socket) {
 		
 		log('Handshake with token: '+token);
 		
-		// Look for monkey with this token
+		// Look for  monkey with this token
 		sql.query('SELECT * FROM `monkeys` WHERE `monkey_token` = ?', [token], function(err, rows, fields) {
 			if (err) throw err;
 			
@@ -340,10 +340,16 @@ function connected(socket, monkey) {
 function updateCount(socket) {
 	sql.query('SELECT `page_id`, COUNT(`monkey_id`) AS `count` FROM `pages` JOIN `monkeys` USING(`page_id`) WHERE `monkey_online` = 1 GROUP BY `page_id`', function(err, rows, fields) {
 		if (err) throw err;
+		
 		socket.emit('monkeys', rows);
 		socket.broadcast.emit('monkeys', rows);
+		
+		var count = 0;
+		for (row in rows) {
+			count += rows[row].count;
+		}
 	
-		log('Count updated: '+rows.length+' monkeys online.');
+		log('Count updated: '+count+' monkeys online.');
 	});
 }
 
@@ -372,7 +378,7 @@ function formatInput(input) {
 }
 
 function log(log) {
-	console.log(strftime('%d %b %H:%M:%S')+' - '+log)
+	console.log(strftime('%e %b %H:%M:%S').trim()+' - '+log)
 }
 
 
