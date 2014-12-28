@@ -11,6 +11,10 @@
     "sequelize": "^2.0.0-rc4",
     "socket.io": "^1.1.0",
     "strftime": "^0.8.2",
-    "validator": "^3.22.1"
-  }
+    "validator": "^3.22.1",
+    "bower": "1.3.x"
+    },
+    "scripts": {
+        "postinstall": "./node_modules/bower/bin/bower install"
+    }
 }
