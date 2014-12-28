@@ -331,6 +331,7 @@ xmm = {
 		smoothScroll.animateScroll(null, '#input', {
 			speed: 500,
 			offset: 250,
+			updateURL: false,
 			easing: 'easeOutQuint',
 			callbackAfter: function() { $('#input').focus(); }
 		});
@@ -342,14 +343,14 @@ xmm = {
 		if (xmm.token != $('.page.current').attr('data-last_monkey'))
 		{
 			$('.current .cursor').addClass('yourturn');
-			$('#favicon').attr('href','/monkey1.png');
-			$('#logo_image').attr('src','/monkey1.png');
+			$('#favicon').attr('href','/images/monkey1.png');
+			$('#logo_image').attr('src','/images/monkey1.png');
 		}
 		else
 		{
 			$('.current .cursor').removeClass('yourturn');
-			$('#favicon').attr('href','/monkey0.png');
-			$('#logo_image').attr('src','/monkey0.png');
+			$('#favicon').attr('href','/images/monkey0.png');
+			$('#logo_image').attr('src','/images/monkey0.png');
 		}
 	},
 	

@@ -7,17 +7,18 @@
 		
 		<title>x million monkeys [alpha]</title>
 		
-		<link id="favicon" rel="icon" type="image/png" href="/monkey0.png">
+		<link id="favicon" rel="icon" type="image/png" href="/images/monkey0.png">
 		
 		<link rel="stylesheet" type="text/css" href="/xmm.css">
-		<link rel="stylesheet" type="text/css" href="/tooltipster.css" />
+		<link rel="stylesheet" type="text/css" href="/tooltipster/css/tooltipster.css">
+		<link rel="stylesheet" type="text/css" href="/tooltipster/css/themes/tooltipster-shadow.css">
 		
 		<meta property="og:type" content="website">
 		<meta property="og:title" content="x million monkeys">
 		<meta property="og:url" content="http://monkeys.nokto.net/">
 		<meta property="og:description" content="Write the next word."/>
 		<meta property="og:site_name" content="x million monkeys"/>
-		<meta property="og:image" content="http://monkeys.nokto.net/assets/images/preview.png">
+		<meta property="og:image" content="http://monkeys.nokto.net/images/preview.png">
 		
 	</head>
 	
@@ -42,10 +43,10 @@
 			
 			<header>
 				<span id="social">
-					<a href="https://twitter.com/search?q=%23xmm" target="_blank"><img src="/twitter.png" title="Select text to share it with #xmm on Twitter" width=20 style="vertical-align: text-bottom;"></a>
-					<a href="https://www.facebook.com/xmillionmonkeys" target="_blank"><img src="/facebook.png" title="Follow us on Facebook !" width=20 style="vertical-align: text-bottom;"></a>
+					<a href="https://twitter.com/search?q=%23xmm" target="_blank"><img src="/images/twitter.png" title="Select text to share it with #xmm on Twitter" width=20 style="vertical-align: text-bottom;"></a>
+					<a href="https://www.facebook.com/xmillionmonkeys" target="_blank"><img src="/images/facebook.png" title="Follow us on Facebook !" width=20 style="vertical-align: text-bottom;"></a>
 				</span>
-				<span id="logo"><img id="logo_image" src="/monkey0.png" data-goto="route" class="goto pointer" title="Home Page (Ctrl+H)" width=32 style="float: left; margin-right: 7px;"></span>
+				<span id="logo"><img id="logo_image" src="/images/monkey0.png" data-goto="route" class="goto pointer" title="Home Page (Ctrl+H)" width=32 style="float: left; margin-right: 7px;"></span>
 				<span id="x">x</span> million monkeys<br>[alpha<span id="app_version"></span>] </span>
 			</header>
 			
@@ -82,24 +83,24 @@
 			
 			<div id="sounds">
 				<audio id="key">
-					<source src="/key.wav" type="audio/wav">
+					<source src="/sounds/key.wav" type="audio/wav">
 				</audio>
 				<audio id="error">
-					<source src="/error.wav" type="audio/wav">
+					<source src="/sounds/error.wav" type="audio/wav">
 				</audio>
 				<audio id="silence">
-					<source src="/silence.mp3" type="audio/mp3">
+					<source src="/sounds/silence.mp3" type="audio/mp3">
 				</audio>
 			</div>
 		
 		</div>
 		
-		<script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
-		<script src="//cdnjs.cloudflare.com/ajax/libs/modernizr/2.8.1/modernizr.min.js"></script>
-		<script src="/jquery.hotkey.js"></script>
-		<script src="/jquery.tooltipster.min.js"></script>
-		<script src="/jquery.touchSwipe.1.6.min.js"></script>
-		<script src="/smooth-scroll.4.5.js"></script>
+		<script src="/jquery/dist/jquery.min.js"></script>
+		<script src="/modernizr/modernizr.js"></script>
+		<script src="/jquery.hotkeys/jquery.hotkeys.js"></script>
+		<script src="/tooltipster/js/jquery.tooltipster.min.js"></script>
+		<script src="/jquery-touchswipe/jquery.touchSwipe.min.js"></script>
+		<script src="/smooth-scroll/dist/js/smooth-scroll.js"></script>
 		<script src="/socket.io/socket.io.js"></script>
 		
 		<script src="/xmm.js"></script>
@@ -117,28 +118,3 @@
 		
 	</body>
 </html>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

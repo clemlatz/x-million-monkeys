@@ -25,10 +25,8 @@ sql.query('USE xmm');
 sql.query('UPDATE `monkeys` SET `monkey_online` = 0');
 
 // Assets
-app.use(express.static(__dirname+'/client/assets/css'));
-app.use(express.static(__dirname+'/client/assets/images'));
-app.use(express.static(__dirname+'/client/assets/js'));
-app.use(express.static(__dirname+'/client/assets/sounds'));
+app.use(express.static(__dirname+'/client/assets'));
+app.use(express.static(__dirname+'/client/libs'));
 
 // Other pages
 app.get('/:num', function(req, res){
@@ -388,12 +386,3 @@ function log(log) {
 http.listen(config.server.port, function(){
   log('Web server listening on port '+config.server.port);
 });
-
-
-
-
-
-
-
-
-
