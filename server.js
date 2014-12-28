@@ -5,10 +5,30 @@ var io = require('socket.io')(http);
 var mysql = require('mysql');
 var strftime = require('strftime');
 var validator = require('validator');
+var Sequelize = require('sequelize');
 
 var config = require('./config');
 
 var version = '0.23.2';
+
+// DB Connection
+sequelize = new Sequelize('xmm', config.db.user, config.db.password, {
+	dialect: "mysql", // or 'sqlite', 'postgres', 'mariadb'
+	port:    3306, // or 5432 (for postgres)
+	dialectOptions: {
+		socketPath: config.db.socketPath
+	}
+});
+sequelize
+.authenticate()
+.complete(function(err) {
+	if (!!err) {
+		log('Sequelize: Unable to connect to the database:', err);
+	} else {
+		log('Sequelize: Connected to MySQL on '+config.db.host+' as '+config.db.user+'.');
+	}
+});
+
 
 // DB Connection
 var sql = mysql.createConnection(config.db);
