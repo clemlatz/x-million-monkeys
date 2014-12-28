@@ -97,12 +97,14 @@ sequelize
 		log('Sequelize: An error occurred while creating the table:', err);
 	} else {
 		log('Sequelize: Database schema synced !');
+		
+		// Resetting online count
+		Monkeys.update({ online: false }, { where: { online: true }});
+		log('Resetting monkey count to 0');
+		
 	}
 });
 
-
-// Resetting online count
-Monkeys.update({ online: false }, { where: { online: true }});
 
 // Assets
 app.use(express.static(__dirname+'/client/assets'));
