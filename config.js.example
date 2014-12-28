@@ -3,6 +3,7 @@ var config = {
 		port: 3000
 	},
 	db: {
+		driver: 'mysql',
 		host: 'localhost',
 		port: 3306,
 		user: 'root',

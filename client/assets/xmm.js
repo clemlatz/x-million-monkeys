@@ -41,15 +41,6 @@ xmm = {
 		}
 		else xmm.debug('Modernizr: Browser has websockets & localstorage');
 		
-		// Get pages from localStorage
-		if (localStorage['pages'])
-		{
-			var localPages = JSON.parse(localStorage['pages']);
-			xmm.debug('Loaded '+localPages.length+' pages from local storage.');
-			xmm.renderPages(localPages);
-/* 			xmm.goToPage(1); */
-		}
-		
 		// Tooltip
 		$('[title]').tooltipster();
 		
@@ -57,7 +48,7 @@ xmm = {
 		$('html.touch #input').attr('placeholder', 'Touch here to write');
 		
 		// Blinking cursor
-		setInterval( function() { $('.current .cursor').toggle(); }, 600);
+		setInterval( function() { $('.current .cursor').toggleClass('invisible'); }, 600);
 		
 		xmm.connect();
 	},
@@ -68,10 +59,10 @@ xmm = {
 		
 		xmm.socket = io();
 		
+		// Ask if last version, if so server will answer "uptodate"
 		xmm.socket.emit('version', xmm.app.version);
 		
 		xmm.socket.on('disconnect', function() {
-/* 			xmm.error('Disconnected!'); */
 			window.location.reload();
 			throw 'Disconnected!';
 		});
@@ -99,11 +90,11 @@ xmm = {
 				$('#ui').fadeIn();
 				
 				// Ask for pages
-				xmm.socket.emit('getPages', localStorage['pages_updated']);
+				xmm.socket.emit('getPages', localStorage.pages_updated);
 				xmm.socket.on('pages', function(pages) {
 					xmm.debug('Received '+pages.length+' pages');
-					localStorage['pages'] = JSON.stringify(pages);
-					localStorage['pages_updated'] = new Date();
+					localStorage.pages = JSON.stringify(pages);
+					localStorage.pages_updated = new Date();
 					xmm.renderPages(pages);
 					if (xmm.addressBarPage) xmm.goToPage(xmm.addressBarPage);
 					else xmm.socket.emit('route');
@@ -116,15 +107,15 @@ xmm = {
 				
 				// Received monkey count
 				xmm.socket.on('monkeys', function(monkeys) {
+					
 					var total = 0;
-					for (key in monkeys)
-					{
-						if (xmm.currentPage == monkeys[key].page_id)
+					$.each(monkeys, function(index, page) {
+						if (xmm.currentPage == page.id)
 						{
-							$('#page_monkeys').text(monkeys[key].count);
+							$('#page_monkeys').text(page.count);
 						}
-						total += monkeys[key].count;
-					}
+						total += page.count;
+					});
 					$('#x').text(total / 1000000);
 					$('#total_monkeys').text(total);
 					
@@ -145,13 +136,13 @@ xmm = {
 					var input_id = 'input_'+data.page+'_'+data.monkey;
 					
 					// If input is empty, remove span
-					if (data.input == '') 
+					if (data.input === '') 
 					{
 						$('#'+input_id).remove();
 					}
 					
 					// If span does not exist, create it
-					else if ($('#'+input_id).length == 0)
+					else if ($('#'+input_id).length === 0)
 					{
 						$('#page_'+data.page+' .inputs').append(' <span id="'+input_id+'" class="saying">'+data.input+'</span>');
 						if (data.monkey == xmm.token) $('#'+input_id).addClass('my_input');
@@ -184,7 +175,7 @@ xmm = {
 					 // If current page
 					if (xmm.currentPage == data.page.id)
 					{
-						if ($('#input').val() == '') $('#input').attr('data-version', data.page.version); // update input version only if input is empty
+						if ($('#input').val() === '') $('#input').attr('data-version', data.page.version); // update input version only if input is empty
 						xmm.playSound('key');
 					}
 					xmm.updateUserRight();
@@ -206,7 +197,7 @@ xmm = {
 		$('.goto.event').click( function() {
 			var new_page = $(this).attr('data-goto');
 			if (new_page == 'route') send({ method: 'get', type: 'route' });
-			else if (new_page != 0) {
+			else if (new_page !== 0) {
 				xmm.goToPage(new_page);
 			}
 		}).removeClass('event');
@@ -237,7 +228,7 @@ xmm = {
 		// User input
 		$('#input.event').keyup( function(e) {
 			
-			if ($('#input').val() == '') // if input is emptied, update input version
+			if ($('#input').val() === '') // if input is emptied, update input version
 			{
 				$('#invite').text('Write the next word:');
 				$('#input').attr('data-version', $('.page.current').attr('data-version'));
@@ -260,6 +251,8 @@ xmm = {
 			}
 		
 		}).removeClass('event');
+		
+		console.log('Event loaded');
 		
 	},
 	
@@ -296,13 +289,13 @@ xmm = {
 		for (key in pages)
 		{
 			p = pages[key];
-			html = '<article id="page_'+p.page_id+'" class="page hidden" data-id="'+p.page_id+'" data-version="'+p.page_version+'" data-last_monkey="'+p.page_last_player+'">' +
-								'<p><span class="page_content">'+p.page_content+'</span><span class="cursor"> _</span></p>' +
+			html = '<article id="page_'+p.id+'" class="page hidden" data-id="'+p.id+'" data-version="'+p.version+'" data-last_monkey="'+p.last_player+'">' +
+								'<p><span class="page_content">'+p.content+'</span><span class="cursor"> _</span></p>' +
 								'<p class="inputs"></p>' +
 							'</article>';
-			if ($('#page_'+p.page_id).length)
+			if ($('#page_'+p.id).length)
 			{
-				$('#page_'+p.page_id).replaceWith(html);
+				$('#page_'+p.id).replaceWith(html);
 			}
 			else
 			{
