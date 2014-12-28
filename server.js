@@ -98,8 +98,20 @@ sequelize
 	} else {
 		log('Sequelize: Database schema synced !');
 		
-		// Resetting online count
-		Monkeys.update({ online: false }, { where: { online: true }});
+		// // Resetting online count
+		// Monkeys.update({ online: false }, { where: { online: true }});
+		
+		Monkeys.findAll().success( function(res) {
+			var key;
+			for (key in res)
+			{
+				monkey = res[key];
+				monkey.online = false;
+				monkey.setPage(null);
+				monkey.save();
+			}
+		});
+		
 		log('Resetting monkey count to 0');
 		
 	}
@@ -195,6 +207,7 @@ function connected(socket, monkey) {
 		log("Monkey #"+monkey.id+" disconnected.");
 		
 		monkey.online = false;
+		monkey.setPage(null);
 		monkey.save().success( function() {
 			updateCount(socket);
 		});
@@ -436,7 +449,7 @@ function connected(socket, monkey) {
 // Broadcast monkey count to all monkeys
 function updateCount(socket) {
 	
-	Pages.findAll({ where: { 'monkeys.online': true }, include: [Monkeys]}).success( function(res) {
+	Pages.findAll({ include: [Monkeys] }).success( function(res) {
 		
 		var page, online = [];
 		for (var key in res)
@@ -448,6 +461,8 @@ function updateCount(socket) {
 		socket.emit('monkeys', online);
 		socket.broadcast.emit('monkeys', online);
 		
+	}).error( function(err) {
+		log('Error while counting monkeys: '+err);
 	});
 }
 
