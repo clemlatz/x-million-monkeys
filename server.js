@@ -7,17 +7,8 @@ var strftime = require('strftime');
 var validator = require('validator');
 var Sequelize = require('sequelize');
 
-if (require.resolve('./config'))
-{
-	var config = require('./config');
-}
-
 var version = '0.23.2';
 
-// Start web server
-http.listen(config.server.port, function(){
-	log('Web server listening on port '+config.server.port);
-});
 
 if (process.env.HEROKU_POSTGRESQL_COBALT_URL) {
 	// the application is executed on Heroku ... use the postgres database
@@ -32,6 +23,8 @@ if (process.env.HEROKU_POSTGRESQL_COBALT_URL) {
 	})
 } else {
 	
+	var config = require('./config');
+	
 	// Else use local mysql connection
 	sequelize = new Sequelize(config.db.database, config.db.user, config.db.password, {
 		dialect: config.db.driver,
@@ -44,6 +37,7 @@ if (process.env.HEROKU_POSTGRESQL_COBALT_URL) {
 	});
 }
 
+
 sequelize
 .authenticate()
 .complete(function(err) {
@@ -51,6 +45,11 @@ sequelize
 		log('Sequelize: Unable to connect to the database:', err);
 	} else {
 		log('Sequelize: Connected to '+config.db.driver+' server at '+config.db.host+' as '+config.db.user+'.');
+		
+		// Start web server
+		http.listen(process.env.PORT || config.server.port, function(){
+			log('Web server listening on port '+process.env.PORT || config.server.port);
+		});
 	}
 });
 
