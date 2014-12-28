@@ -44,7 +44,7 @@ sequelize
 	if (!!err) {
 		log('Sequelize: Unable to connect to the database:', err);
 	} else {
-		log('Sequelize: Connected to '+config.db.driver+' server at '+config.db.host+' as '+config.db.user+'.');
+		// log('Sequelize: Connected to '+config.db.driver+' server at '+config.db.host+' as '+config.db.user+'.');
 		
 		// Start web server
 		http.listen(process.env.PORT || config.server.port, function(){
@@ -102,7 +102,7 @@ sequelize
 
 
 // Resetting online count
-Monkeys.update({ online: 0 }, { where: { online: 1 }});
+Monkeys.update({ online: false }, { where: { online: true }});
 
 // Assets
 app.use(express.static(__dirname+'/client/assets'));
@@ -151,7 +151,7 @@ io.on('connection', function(socket) {
 					monkey = Monkeys.build({
 						token: token,
 						ip: socket.handshake.address,
-						online: 1,
+						online: false,
 						seen: new Date(),
 					});
 				
@@ -172,7 +172,7 @@ io.on('connection', function(socket) {
 				{
 					log('Retrieved a monkey with token: '+token);
 					
-					monkey.online = 1;
+					monkey.online = true;
 					monkey.seen = new Date();
 					monkey.save();
 					
@@ -192,7 +192,7 @@ function connected(socket, monkey) {
 	socket.on('disconnect', function() {
 		log("Monkey #"+monkey.id+" disconnected.");
 		
-		monkey.online = 0;
+		monkey.online = false;
 		monkey.save().success( function() {
 			updateCount(socket);
 		});
@@ -431,7 +431,7 @@ function connected(socket, monkey) {
 // Broadcast monkey count to all monkeys
 function updateCount(socket) {
 	
-	Pages.findAll({ where: { 'monkeys.online': 1 }, include: [Monkeys]}).success( function(res) {
+	Pages.findAll({ where: { 'monkeys.online': true }, include: [Monkeys]}).success( function(res) {
 		
 		var page, online = [];
 		for (var key in res)
