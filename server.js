@@ -206,30 +206,43 @@ function connected(socket, monkey) {
 		
 		Pages.findAndCountAll().success( function(result) {
 			
-			var pages = result.rows;
+			var pages = result.rows,
+				route;
 			
 			if (result.count)
 			{
-				// Default route : first page
-				route = pages[0].id;
-				rule = 'default route';
+				// Page occupation
+				var total = 0;
+				var ideal = [], crowded = [], empty = [], blank = [];
+				for (var page in pages)
+				{
+					// Monkeys.findAndCountAll({ where: { online: 1, page_id: page.id }}).success( function(result) {
+					// 	total++;
+					// 	if (result.count >= 4) crowded.push(page.id);
+					// 	if (result.count === 0) empty.push(page.id);
+					// 	if (result.count < 4) ideal.push(page.id);
+					// });
+				}
+				
+				// Router rules
+				if (crowded.length == total) // All pages are crowded, create a new one
+				{
+					route = pages[0].id;
+					rule = 'all page crowded (temp)';
+				}
+				else if (empty.length == total) // All pages are empty, go to page 1
+				{
+					route = pages[0].id;
+					rule = 'all pages empty';
+				}
+				else if (ideal.length) // If there is at least one ideal page, go there
+				{
+					route = ideal[0];
+					rule = 'ideal page';
+				}
 			}
 			
-			// Page occupation
-			var total = 0;
-			var ideal = [], crowded = [], empty = [], blank = [];
-			for (var page in pages)
-			{
-				// Monkeys.findAndCountAll({ where: { online: 1, page_id: page.id }}).success( function(result) {
-				// 	total++;
-				// 	if (result.count >= 4) crowded.push(page.id);
-				// 	if (result.count === 0) empty.push(page.id);
-				// 	if (result.count < 4) ideal.push(page.id);
-				// });
-			}
-			
-			// If 0 pages, create one and route to it
-			if (!result.count)
+			if (!route)
 			{
 				Pages.create({
 					content: ' ',
@@ -242,29 +255,19 @@ function connected(socket, monkey) {
 					route = page.id;
 					rule = 'no page available, creating a new one';
 					
+					// Send route to monkey
+					socket.emit('route', route);
+					log("Monkey #"+monkey.id+" routed to page "+route+" according to rule: "+rule+".");
+					
 				});
 			}
-			
-			// Router rules
-			else if (crowded.length == total) // All pages are crowded, create a new one
+			else
 			{
-				route = pages[0].id;
-				rule = 'all page crowded (temp)';
-			}
-			else if (empty.length == total) // All pages are empty, go to page 1
-			{
-				route = pages[0].id;
-				rule = 'all pages empty';
-			}
-			else if (ideal.length) // If there is at least one ideal page, go there
-			{
-				route = ideal[0];
-				rule = 'ideal page';
+				// Send route to monkey
+				socket.emit('route', route);
+				log("Monkey #"+monkey.id+" routed to page "+route+" according to rule: "+rule+".");
 			}
 			
-			// Send route to monkey
-			socket.emit('route', route);
-			log("Monkey #"+monkey.id+" routed to page "+route+" according to rule: "+rule+".");
 			
 		});
 		
