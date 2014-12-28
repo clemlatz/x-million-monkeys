@@ -19,7 +19,7 @@ sql.connect(function(err) {
 	}
 	log('Connected to MySQL on '+config.db.host+' as id ' + sql.threadId);
 });
-sql.query('USE xmm');
+sql.query('USE '+config.db.database);
 
 // Resetting online count
 sql.query('UPDATE `monkeys` SET `monkey_online` = 0');
