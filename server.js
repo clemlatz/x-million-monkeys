@@ -7,7 +7,10 @@ var strftime = require('strftime');
 var validator = require('validator');
 var Sequelize = require('sequelize');
 
-var config = require('./config');
+if (require.resolve('./config'))
+{
+	var config = require('./config');
+}
 
 var version = '0.23.2';
 
@@ -16,16 +19,31 @@ http.listen(config.server.port, function(){
 	log('Web server listening on port '+config.server.port);
 });
 
-// Sequelize DB Connection
-sequelize = new Sequelize('xmm', config.db.user, config.db.password, {
-	dialect: config.db.driver, // or 'sqlite', 'postgres', 'mariadb'
-	host: config.db.host,
-	logging: false,
-	port:    3306, // or 5432 (for postgres)
-	dialectOptions: {
-		socketPath: config.db.socketPath
-	}
-});
+if (process.env.HEROKU_POSTGRESQL_COBALT_URL) {
+	// the application is executed on Heroku ... use the postgres database
+	var match = process.env.HEROKU_POSTGRESQL_COBALT_URL.match(/postgres:\/\/([^:]+):([^@]+)@([^:]+):(\d+)\/(.+)/)
+	
+	sequelize = new Sequelize(match[5], match[1], match[2], {
+		dialect:  'postgres',
+		protocol: 'postgres',
+		port:     match[4],
+		host:     match[3],
+		logging: false
+	})
+} else {
+	
+	// Else use local mysql connection
+	sequelize = new Sequelize(config.db.database, config.db.user, config.db.password, {
+		dialect: config.db.driver,
+		host: config.db.host,
+		logging: false,
+		port:    3306,
+		dialectOptions: {
+			socketPath: config.db.socketPath
+		}
+	});
+}
+
 sequelize
 .authenticate()
 .complete(function(err) {
