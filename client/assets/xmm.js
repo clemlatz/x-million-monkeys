@@ -214,7 +214,7 @@ xmm = {
 		});
 		
 		// Touch navigation
-		$(document).swipe({
+		$('html.touch').swipe({
 			swipeRight:function() {
 				var prev = $('#prev_page').attr('data-goto');
 				if (prev) xmm.goToPage(prev);
