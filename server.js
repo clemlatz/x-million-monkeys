@@ -19,7 +19,10 @@ if (process.env.DATABASE_URL) {
 		protocol: 'postgres',
 		port:     match[4],
 		host:     match[3],
-		logging: false
+		logging: false,
+		dialectOptions: {
+			ssl: true
+		}
 	})
 } else {
 	
@@ -99,8 +102,6 @@ sequelize
 		log('Sequelize: Database schema synced !');
 		
 		// // Resetting online count
-		// Monkeys.update({ online: false }, { where: { online: true }});
-		
 		Monkeys.findAll().success( function(res) {
 			var key;
 			for (key in res)
@@ -111,7 +112,6 @@ sequelize
 				monkey.save();
 			}
 		});
-		
 		log('Resetting monkey count to 0');
 		
 	}
