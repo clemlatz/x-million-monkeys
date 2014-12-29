@@ -8,7 +8,7 @@ var strftime = require('strftime');
 var validator = require('validator');
 var Sequelize = require('sequelize');
 
-var version = '0.23.2';
+var version = '0.24';
 
 // Connect to database with ENV
 if (process.env.DATABASE_URL) {
