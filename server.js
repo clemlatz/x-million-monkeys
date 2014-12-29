@@ -323,16 +323,18 @@ function connected(socket, monkey) {
 					
 					updateCount(socket);
 					
+					var res = { page: page };
+					
 					sequelize.query('SELECT MIN(`id`) AS `next` FROM `pages` WHERE `id` > '+page.id+' LIMIT 1').success( function(result) {
 						
-						if (result.next) page.next = result.next;
+						if (result[0].next) res.next = result[0].next;
 						
 						sequelize.query('SELECT MAX(`id`) AS `prev` FROM `pages` WHERE `id` < '+page.id+' LIMIT 1').success( function(result) {
 							
-							if (result.prev) page.prev = result.prev;
+							if (result[0].prev) res.prev = result[0].prev;
 							
 							log("Monkey #"+monkey.id+" moved from "+move.from+" to "+move.to+".");
-							socket.emit('page', page);
+							socket.emit('page', res);
 							
 						});
 						

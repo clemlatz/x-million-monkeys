@@ -122,9 +122,9 @@ xmm = {
 				});
 				
 				// Received page infos
-				xmm.socket.on('page', function(page) {
+				xmm.socket.on('page', function(res) {
 					
-					$('#next_page').attr('data-goto', page.next);
+					$('#next_page').attr('data-goto', res.next);
 					$('#prev_page').attr('data-goto', page.prev);
 					$('#theme').html('Current theme: &laquo; '+page.theme+' &raquo; (for another <span id="theme_words">'+page.theme_words+'</span> word'+xmm.s(page.theme_words)+')');
 					
