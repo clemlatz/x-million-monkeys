@@ -222,7 +222,7 @@ function connected(socket, monkey) {
 		
 		log("Monkey #"+monkey.id+" asked for route.");
 		
-		Pages.findAndCountAll().success( function(result) {
+		Pages.findAndCountAll({ include: [Monkeys] }).success( function(result) {
 			
 			var pages = result.rows,
 				route;
@@ -230,23 +230,23 @@ function connected(socket, monkey) {
 			if (result.count)
 			{
 				// Page occupation
-				var total = 0;
-				var ideal = [], crowded = [], empty = [], blank = [];
-				for (var page in pages)
+				var total = 0, count = 0, key, page, 
+					ideal = [], crowded = [], empty = [], blank = [];
+				for (key in pages)
 				{
-					// Monkeys.findAndCountAll({ where: { online: 1, page_id: page.id }}).success( function(result) {
-					// 	total++;
-					// 	if (result.count >= 4) crowded.push(page.id);
-					// 	if (result.count === 0) empty.push(page.id);
-					// 	if (result.count < 4) ideal.push(page.id);
-					// });
+					page = pages[key];
+					count = page.Monkeys.length;
+					if (count >= 4) crowded.push(page.id);
+					if (count === 0) empty.push(page.id);
+					if (count < 4) ideal.push(page.id);
+					total++;
 				}
 				
 				// Router rules
 				if (crowded.length == total) // All pages are crowded, create a new one
 				{
-					route = pages[0].id;
-					rule = 'all page crowded (temp)';
+					// route = pages[0].id;
+					rule = 'all page crowded, creating a new one';
 				}
 				else if (empty.length == total) // All pages are empty, go to page 1
 				{
@@ -271,7 +271,10 @@ function connected(socket, monkey) {
 				}).success( function(page) {
 					
 					route = page.id;
-					rule = 'no page available, creating a new one';
+					if (!rule) 
+					{
+						rule = 'no rule set, creating a new page';
+					}
 					
 					// Send route to monkey
 					socket.emit('route', route);
