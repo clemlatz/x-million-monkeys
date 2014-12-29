@@ -1,15 +1,23 @@
 var config = {
 	server: {
-		port: 3000
+		port: 5000
 	},
 	db: {
-		driver: 'mysql',
-		host: 'localhost',
-		port: 3306,
 		user: 'root',
-		password: '',
-		database: 'xmm'
+		pass: 'pass',
+		base: 'xmm',
+		options: {
+			dialect: 'mysql',
+			protocol: 'tcp',
+			host: 'localhost',
+			logging: false,
+			port: 3306,
+			dialectOptions: {
+				socketPath  : '',
+				ssl: false
+			}
+		}
 	}
-}
+};
 
 module.exports = config;
