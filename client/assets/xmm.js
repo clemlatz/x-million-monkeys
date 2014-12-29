@@ -125,8 +125,8 @@ xmm = {
 				xmm.socket.on('page', function(res) {
 					
 					$('#next_page').attr('data-goto', res.next);
-					$('#prev_page').attr('data-goto', page.prev);
-					$('#theme').html('Current theme: &laquo; '+page.theme+' &raquo; (for another <span id="theme_words">'+page.theme_words+'</span> word'+xmm.s(page.theme_words)+')');
+					$('#prev_page').attr('data-goto', res.prev);
+					$('#theme').html('Current theme: &laquo; '+res.page.theme+' &raquo; (for another <span id="theme_words">'+res.page.theme_words+'</span> word'+xmm.s(res.page.theme_words)+')');
 					
 				});
 				
@@ -203,13 +203,13 @@ xmm = {
 		}).removeClass('event');
 		
 		// Keyboard navigation
-		$(document).bind('keydown', 'Ctrl+j', function() {
-			var prev = $('#prev_page').attr('data-goto');
-			if (prev) xmm.goToPage(prev);
-		}).bind('keydown', 'Ctrl+k', function() {
+		$('input').bind('keyup.ctrl_k', function(){
 			var next = $('#next_page').attr('data-goto');
 			if (next) xmm.goToPage(next);
-		}).bind('keydown', 'Ctrl+h', function() {
+		}).bind('keydown.ctrl_j', function() {
+			var prev = $('#prev_page').attr('data-goto');
+			if (prev) xmm.goToPage(prev);
+		}).bind('keydown.ctrl_h', function() {
 			xmm.socket.emit('route');
 		});
 		
