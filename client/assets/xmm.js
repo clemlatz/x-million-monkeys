@@ -252,6 +252,27 @@ xmm = {
 		
 		}).removeClass('event');
 		
+		// Show/close text sharer
+		$('#pages').mouseup(function(e) {
+			var selection = window.getSelection();
+			if (selection != '') {
+				$('#sharer').slideDown();
+				$('#excerpt').text(selection);
+				$(document).scrollTop($('#sharer').offset().top);
+			}
+		});
+		$('#close').click( function(e) {
+			$('#sharer').slideUp();
+		});
+		
+		// Share on Twitter
+		$('#twitter').click( function(e) {
+			var page_id = $('#page').attr('data-id'),
+			text = '"'+$('#excerpt').val()+'" #xmm http://monkeys.nokto.net/'+xmm.currentPage,
+			url = 'https://twitter.com/intent/tweet?status='+encodeURIComponent(text);
+			window.open(url, 'Share on Twitter', 'width=640,height=300')
+		});
+		
 		console.log('Event loaded');
 		
 	},
