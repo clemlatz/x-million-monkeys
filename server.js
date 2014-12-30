@@ -27,9 +27,8 @@ if (process.env.CLEARDB_DATABASE_URL) {
 				dialect: 'mysql',
 				protocol: 'mysql',
 				host: match[3],
-				logging: false,
 				port: 3306,
-				logging: false,
+				logging: true,
 				dialectOptions: {
 					ssl: true
 				}
@@ -133,18 +132,9 @@ sequelize
 	} else {
 		log('Sequelize: Database schema synced !');
 		
-		// // Resetting online count
-		Monkeys.findAll().success( function(res) {
-			var key;
-			for (key in res)
-			{
-				monkey = res[key];
-				monkey.online = false;
-				monkey.setPage(null);
-				monkey.save();
-			}
-		});
-		log('Resetting monkey count to 0');
+		// Resetting online count
+		log('Resetting monkey count to 0...');
+		sequelize.query('UPDATE `Monkeys` SET `online` = 0, `PageId` = NULL WHERE `online` = 1 OR `PageId` IS NOT NULL');
 		
 	}
 });
@@ -530,5 +520,5 @@ function formatInput(input) {
 }
 
 function log(log) {
-	console.log(strftime('%e %b %H:%M:%S').trim()+' - '+log)
+	console.log(strftime('%e %b %H:%M:%S').trim()+' - '+log);
 }
