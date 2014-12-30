@@ -11,7 +11,36 @@ var Sequelize = require('sequelize');
 var version = '0.24';
 
 // Connect to database with ENV
-if (process.env.DATABASE_URL) {
+if (process.env.CLEARDB_DATABASE_URL) {
+	
+	var match = process.env.CLEARDB_DATABASE_URL.match(/mysql:\/\/([^:]+):([^@]+)@([^:]+)\/(.+)\?/);
+	
+	var config = {
+		server: {
+			port: process.env.PORT
+		},
+		db: {
+			user: match[1],
+			pass: match[2],
+			base: match[4],
+			options: {
+				dialect: 'mysql',
+				protocol: 'mysql',
+				host: match[3],
+				logging: false,
+				port: 3306,
+				logging: false,
+				dialectOptions: {
+					ssl: true
+				}
+			}
+		}
+	};
+	
+}
+
+// Connect to database with ENV
+else if (process.env.DATABASE_URL) {
 
 	var match = process.env.DATABASE_URL.match(/postgres:\/\/([^:]+):([^@]+)@([^:]+):(\d+)\/(.+)/);
 	
@@ -49,14 +78,14 @@ sequelize = new Sequelize(config.db.base, config.db.user, config.db.pass, config
 sequelize
 .authenticate()
 .success( function() {
-	log('Sequelize: Connected to '+config.db.dialect+' server at '+config.db.host+' as '+config.db.user+'.');
+	log('Sequelize: Connected to '+config.db.options.dialect+' server at '+config.db.options.host+' as '+config.db.user+'.');
 	
 	// Start web server
 	http.listen(config.server.port, function(){
 		log('Web server listening on port '+config.server.port);
 	});
 }).error( function(err) {
-	log('DB Error: '+err);
+	log('Sequelize: Error connecting '+config.db.options.dialect+' server at '+config.db.options.host+' as '+config.db.user+': '+err);
 });
 
 // Page entity schema
@@ -225,7 +254,7 @@ function connected(socket, monkey) {
 		Pages.findAndCountAll({ include: [Monkeys] }).success( function(result) {
 			
 			var pages = result.rows,
-				route;
+				route, rule;
 			
 			if (result.count)
 			{
