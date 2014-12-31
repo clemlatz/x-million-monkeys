@@ -251,7 +251,7 @@ function connected(socket, monkey) {
 		
 		log("Monkey #"+monkey.id+" asked for route.");
 		
-		Pages.findAndCountAll({ include: [Monkeys] }).success( function(result) {
+		Pages.findAndCountAll({ attributes: ['id'], include: [Monkeys] }).success( function(result) {
 			
 			var pages = result.rows,
 				route, rule;
@@ -486,7 +486,9 @@ function connected(socket, monkey) {
 // Broadcast monkey count to all monkeys
 function updateCount(socket) {
 	
-	Pages.findAll({ include: [Monkeys] }).success( function(res) {
+	log('Updating monkey count...');
+	
+	Pages.findAll({ attributes: ['id'], include: [Monkeys] }).success( function(res) {
 		
 		var page, online = [];
 		for (var key in res)
