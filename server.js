@@ -28,7 +28,7 @@ if (process.env.CLEARDB_DATABASE_URL) {
 				protocol: 'mysql',
 				host: match[3],
 				port: 3306,
-				logging: true,
+				logging: false,
 				dialectOptions: {
 					ssl: true
 				}
@@ -241,7 +241,7 @@ function connected(socket, monkey) {
 		
 		log("Monkey #"+monkey.id+" asked for route.");
 		
-		Pages.findAndCountAll({ attributes: ['id'], include: [Monkeys] }).success( function(result) {
+		Pages.findAndCountAll({ attributes: ['id', 'createdAt'], include: [Monkeys], order: 'createdAt' }).success( function(result) {
 			
 			var pages = result.rows,
 				route, rule;
@@ -264,7 +264,6 @@ function connected(socket, monkey) {
 				// Router rules
 				if (crowded.length == total) // All pages are crowded, create a new one
 				{
-					// route = pages[0].id;
 					rule = 'all page crowded, creating a new one';
 				}
 				else if (empty.length == total) // All pages are empty, go to page 1
