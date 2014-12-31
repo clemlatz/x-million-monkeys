@@ -10,6 +10,12 @@ x-million-monkeys
 
 ## Changelog
 
+
+0.24.1 (30/12/2014)
+* added ClearDB MySQL support
+* route to oldest page by default
+* various bug fixes and memory optimizations
+
 0.24 (29/12/2014)
 * new router rule: create a new page if all are crowded (>= 4 monkeys)
 * disabled touch navigation on non-touch devices
