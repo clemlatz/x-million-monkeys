@@ -11,6 +11,7 @@
     "newrelic": "^1.14.4",
     "pg": "^4.1.1",
     "sequelize": "^2.0.0-rc4",
+    "sequelize-heroku": "^1.0.0",
     "socket.io": "^1.1.0",
     "strftime": "^0.8.2",
     "validator": "^3.22.1"
