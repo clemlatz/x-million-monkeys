@@ -63,7 +63,7 @@ xmm = {
 		xmm.socket.emit('version', xmm.app.version);
 		
 		xmm.socket.on('disconnect', function() {
-			window.location.reload();
+			// window.location.reload();
 			throw 'Disconnected!';
 		});
 		
