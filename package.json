@@ -19,6 +19,9 @@
     "strftime": "^0.8.2",
     "validator": "^3.22.1"
   },
+  "engines": {
+    "node": "0.10.x"
+  },
   "scripts": {
     "postinstall": "./node_modules/bower/bin/bower install"
   }
