@@ -3,6 +3,8 @@ var express = require('express');
 var app = express();
 var http = require('http').Server(app);
 var io = require('socket.io')(http);
+var redis = require('redis');
+var redisAdapter = require('socket.io-redis');
 var mysql = require('mysql');
 var strftime = require('strftime');
 var validator = require('validator');
@@ -93,6 +95,30 @@ app.get('/:num', function(req, res){
 app.get('/', function(req, res){
   	res.sendFile(__dirname+'/client/index.html');
 });
+
+// Redis adapater
+function addRedisAdapter(io) {
+  var redisUrl = process.env.REDISCLOUD_URL || 'redis://127.0.0.1:6379';
+  var redisOptions = require('parse-redis-url')(redis).parse(redisUrl);
+  var pub = redis.createClient(redisOptions.port, redisOptions.host, {
+    detect_buffers: true,
+    auth_pass: redisOptions.password
+  });
+  var sub = redis.createClient(redisOptions.port, redisOptions.host, {
+    detect_buffers: true,
+    auth_pass: redisOptions.password
+  });
+
+  io.adapter(redisAdapter({
+    pubClient: pub,
+    subClient: sub
+  }));
+  console.log('Redis adapter started with url: ' + redisUrl);
+}
+
+if (process.env.REDISCLOUD_URL) {
+	addRedisAdapter(io);
+}
 
 // Socket connect
 io.on('connection', function(socket) {
