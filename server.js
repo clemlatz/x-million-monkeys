@@ -117,7 +117,7 @@ function addRedisAdapter(io) {
   var sub = redis.createClient(redisOptions.port, redisOptions.host, {
     detect_buffers: true,
     auth_pass: redisOptions.password
-});a
+});
 
   io.adapter(redisAdapter({
     pubClient: pub,
@@ -364,6 +364,9 @@ function connected(socket, monkey) {
 			
 			console.log(page.last_player +'/'+monkey.token);
 			
+			// Check input for forbidden signs
+			var m = /\/|\\|\||@|#|\[|]|{|}|\^|http|www|\.com|\.fr|\.net/.exec(data.input);
+			
 			// Check input
 			if (data.input.length > 30)
 			{
@@ -371,7 +374,7 @@ function connected(socket, monkey) {
 				io.sockets.emit('say', { page: page.id, monkey: monkey.token, input: "" });
 				log("Monkey #"+monkey.id+"'s input ("+input+") is longer than 30 chars.");
 			}
-			else if (m = /\/|\\|\||@|#|\[|]|{|}|\^|http|www|\.com|\.fr|\.net/.exec(data.input))
+			else if (m)
 			{
 				socket.emit('alert', 'Your input contains forbidden characters ('+m[0]+').');
 				io.sockets.emit('say', { page: page.id, monkey: monkey.token, input: "" });
@@ -404,7 +407,7 @@ function connected(socket, monkey) {
 					var words = page.content.split(' '); // Get an array with words from page content
 					
 					var themes = [];
-					for (w in words)
+					for (var w in words)
 					{
 						words[w] = validator.blacklist(words[w], '.!?,;::*"'); // Delete punctuation signs
 						if (words[w].length >= 5) themes.push(words[w]); // Keep only words with 5 letters or more
