@@ -10,8 +10,13 @@ var strftime = require('strftime');
 var validator = require('validator');
 var Sequelize = require('sequelize');
 var sequelize = require('sequelize-heroku').connect();
+// var config = require('./config');
 
 var version = '0.24.1';
+
+if (!sequelize) {
+	throw 'Please set database credentials in config.js';
+}
 
 sequelize
 .authenticate()
@@ -107,7 +112,7 @@ function addRedisAdapter(io) {
   var sub = redis.createClient(redisOptions.port, redisOptions.host, {
     detect_buffers: true,
     auth_pass: redisOptions.password
-  });
+});a
 
   io.adapter(redisAdapter({
     pubClient: pub,
