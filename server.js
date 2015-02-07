@@ -1,4 +1,3 @@
-require('newrelic');
 var express = require('express');
 var app = express();
 var http = require('http').Server(app);
@@ -10,12 +9,18 @@ var strftime = require('strftime');
 var validator = require('validator');
 var Sequelize = require('sequelize');
 var sequelize = require('sequelize-heroku').connect();
-// var config = require('./config');
 
 var version = '0.24.1';
 
 if (!sequelize) {
-	throw 'Please set database credentials in config.js';
+	try {
+		var config = require('./config');
+	} catch(e) {
+		console.log('*** Error : please create and fill config.js from config.js.example');
+		process.exit(0);
+	}
+	
+	var sequelize = new Sequelize(config.db.base, config.db.user, config.db.pass, config.db.options);
 }
 
 sequelize

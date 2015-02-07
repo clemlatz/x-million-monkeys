@@ -10,10 +10,10 @@ Demo: http://monkeys.nokto.net/
 1. Install node & bower
 2. Install node dependencies: `npm install`
 3. Install client JS dependecies: `bower install`
-4. Rename `config.js.example` to `config.js` and add database information
+4. Create config file `mv config.js.example config.js`
+5. Add database credentials in `config.js`
 
 ## Changelog
-
 
 0.24.1 (30/12/2014)
 * added ClearDB MySQL support
