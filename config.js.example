@@ -1,0 +1,20 @@
+// Sequelize database config, see http://sequelize.readthedocs.org/en/latest/api/sequelize/
+var config = {
+    db: {
+        user: 'root',
+        pass: 'pass',
+        base: 'xmm',
+        options: {
+            dialect: 'mysql',
+            protocol: 'mysql',
+            host: 'localhost',
+            port: 3306,
+            logging: false,
+            dialectOptions: {
+                ssl: false
+            }
+        }
+    }
+};
+
+module.exports = config;
