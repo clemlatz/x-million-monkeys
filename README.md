@@ -15,6 +15,9 @@ Demo: http://monkeys.nokto.net/
 
 ## Changelog
 
+0.24.2 (07/02/2015)
+* Add link to GitHub repository
+
 0.24.1 (30/12/2014)
 * added ClearDB MySQL support
 * route to oldest page by default
