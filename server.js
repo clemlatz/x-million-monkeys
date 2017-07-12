@@ -19,7 +19,7 @@ if (!sequelize) {
 		console.log('*** Error : please create and fill config.js from config.js.example');
 		process.exit(0);
 	}
-	
+
 	var sequelize = new Sequelize(config.db.base, config.db.user, config.db.pass, config.db.options);
 }
 
@@ -28,12 +28,12 @@ sequelize
 .then( function() {
 	var config = sequelize.connectionManager.config;
     console.log('sequelize-heroku: Connected to '+config.host+' as '+config.username+'.');
-	
+
 	// Start web server
 	http.listen(process.env.PORT, function(){
 		log('Web server listening on port '+process.env.PORT);
 	});
-	
+
 }).catch( function(err) {
     var config = sequelize.connectionManager.config;
     console.log('Sequelize: Error connecting '+config.host+' as '+config.user+': '+err);
@@ -78,17 +78,14 @@ Inputs.belongsTo(Monkeys);
 // Sync schemas
 sequelize
 .sync()
-.complete(function(err) {
-	if (!!err) {
-		log('Sequelize: An error occurred while creating the table:', err);
-	} else {
-		log('Sequelize: Database schema synced !');
-		
-		// Resetting online count
-		log('Resetting monkey count to 0...');
-		sequelize.query('UPDATE `Monkeys` SET `online` = 0, `PageId` = NULL WHERE `online` = 1 OR `PageId` IS NOT NULL');
-		
-	}
+.then(function() {
+	log('Sequelize: Database schema synced !');
+
+	// Resetting online count
+	log('Resetting monkey count to 0...');
+	sequelize.query('UPDATE `Monkeys` SET `online` = 0, `PageId` = NULL WHERE `online` = 1 OR `PageId` IS NOT NULL');
+}).catch(function(err) {
+	log('Sequelize: An error occurred while creating the table:', err);
 });
 
 
@@ -133,10 +130,10 @@ if (process.env.REDISCLOUD_URL) {
 // Socket connect
 io.on('connection', function(socket) {
 	log('New user from: '+socket.handshake.address);
-	
+
 	// Check version
 	socket.on('version', function(local_version) {
-		
+
 		if (local_version == version)
 		{
 			socket.emit('uptodate');
@@ -145,19 +142,19 @@ io.on('connection', function(socket) {
 		{
 			socket.emit('_error', 'Your client (v'+local_version+') is obsolete, a new version of this app (v'+version+') is available. Please refresh the page.');
 		}
-		
+
 	});
-	
+
 	// Handshake
 	socket.on('handshake', function(token) {
-		
+
 		log('Handshake with token: '+token);
-		
+
 		// Look for  monkey with this token
-		Monkeys.find({ where: { token: token } }).success(function(monkey) {
-				
+		Monkeys.find({ where: { token: token } }).then(function(monkey) {
+
 				// No monkey, create one
-				if (!monkey) 
+				if (!monkey)
 				{
 					// Insert new monkey with this token
 					monkey = Monkeys.build({
@@ -166,66 +163,64 @@ io.on('connection', function(socket) {
 						online: false,
 						seen: new Date(),
 					});
-				
+
 					monkey
 					.save()
-					.complete(function(err) {
-						if (!!err) throw err;
-						else 
-						{
-							log('Created new monkey (#'+monkey.id+') with token: '+token);
-							connected(socket, monkey);
-						}
+					.then(function(err) {
+						log('Created new monkey (#'+monkey.id+') with token: '+token);
+						connected(socket, monkey);
+					}).catch(function(err) {
+						throw err;
 					});
 				}
-				
+
 				// Else update monkey seen
-				else 
+				else
 				{
 					log('Retrieved a monkey with token: '+token);
-					
+
 					monkey.online = true;
 					monkey.seen = new Date();
 					monkey.save();
-					
+
 					connected(socket, monkey);
 				}
 			});
-		
+
 	});
-	
+
 });
 
 
 function connected(socket, monkey) {
-	
+
 	socket.emit('connected');
-	
+
 	socket.on('disconnect', function() {
 		log("Monkey #"+monkey.id+" disconnected.");
-		
+
 		monkey.online = false;
 		monkey.setPage(null);
-		monkey.save().success( function() {
+		monkey.save().then( function() {
 			updateCount(socket);
 		});
 
 	});
-	
+
 	// Get route
 	socket.on('route', function() {
-		
+
 		log("Monkey #"+monkey.id+" asked for route.");
-		
-		Pages.findAndCountAll({ attributes: ['id', 'createdAt'], include: [Monkeys], order: 'createdAt' }).success( function(result) {
-			
+
+		Pages.findAndCountAll({ attributes: ['id', 'createdAt'], include: [Monkeys], order: 'createdAt' }).then( function(result) {
+
 			var pages = result.rows,
 				route, rule;
-			
+
 			if (result.count)
 			{
 				// Page occupation
-				var total = 0, count = 0, key, page, 
+				var total = 0, count = 0, key, page,
 					ideal = [], crowded = [], empty = [], blank = [];
 				for (key in pages)
 				{
@@ -236,7 +231,7 @@ function connected(socket, monkey) {
 					if (count < 4) ideal.push(page.id);
 					total++;
 				}
-				
+
 				// Router rules
 				if (crowded.length == total) // All pages are crowded, create a new one
 				{
@@ -253,7 +248,7 @@ function connected(socket, monkey) {
 					rule = 'ideal page';
 				}
 			}
-			
+
 			if (!route)
 			{
 				Pages.create({
@@ -262,18 +257,18 @@ function connected(socket, monkey) {
 					timestamp: 0,
 					theme: ' ',
 					theme_words: 1,
-				}).success( function(page) {
-					
+				}).then( function(page) {
+
 					route = page.id;
-					if (!rule) 
+					if (!rule)
 					{
 						rule = 'no rule set, creating a new page';
 					}
-					
+
 					// Send route to monkey
 					socket.emit('route', route);
 					log("Monkey #"+monkey.id+" routed to page "+route+" according to rule: "+rule+".");
-					
+
 				});
 			}
 			else
@@ -282,29 +277,29 @@ function connected(socket, monkey) {
 				socket.emit('route', route);
 				log("Monkey #"+monkey.id+" routed to page "+route+" according to rule: "+rule+".");
 			}
-			
-			
+
+
 		});
-		
+
 	});
-	
+
 	// Get pages
 	socket.on('getPages', function(date) {
-		
+
 		log("Monkey #"+monkey.id+" asked for pages updated after "+date);
-		
-		Pages.findAndCountAll().success( function(result) {
+
+		Pages.findAndCountAll().then( function(result) {
 			socket.emit('pages', result.rows);
 		});
-		
+
 	});
-	
-	
+
+
 	// Monkey changing page
 	socket.on('move', function(move) {
-		
-		Pages.find({ where: { id: move.to }}).success( function(page) {
-			
+
+		Pages.find({ where: { id: move.to }}).then( function(page) {
+
 			// If page not found, send monkey to home
 			if (!page)
 			{
@@ -313,60 +308,60 @@ function connected(socket, monkey) {
 			else
 			{
 
-				monkey.setPage(page).success(function() {
-					
+				monkey.setPage(page).then(function() {
+
 					updateCount(socket);
-					
+
 					var res = { page: page };
-					
-					sequelize.query('SELECT MIN(`id`) AS `next` FROM `pages` WHERE `id` > '+page.id+' LIMIT 1').success( function(result) {
-						
+
+					sequelize.query('SELECT MIN(`id`) AS `next` FROM `pages` WHERE `id` > '+page.id+' LIMIT 1').then( function(result) {
+
 						if (result[0].next) res.next = result[0].next;
-						
-						sequelize.query('SELECT MAX(`id`) AS `prev` FROM `pages` WHERE `id` < '+page.id+' LIMIT 1').success( function(result) {
-							
+
+						sequelize.query('SELECT MAX(`id`) AS `prev` FROM `pages` WHERE `id` < '+page.id+' LIMIT 1').then( function(result) {
+
 							if (result[0].prev) res.prev = result[0].prev;
-							
+
 							log("Monkey #"+monkey.id+" moved from "+move.from+" to "+move.to+".");
 							socket.emit('page', res);
-							
+
 						});
-						
+
 					});
-				
+
 				});
 			}
-			
+
 		});
-	
+
 	});
-	
+
 	// Monkey saying
 	socket.on('say', function(data) {
-		
+
 		input = formatInput(data.input);
-		
+
 /* 		log("Monkey saying '"+data.input+"'"); */
-		
+
 		var response = { page: data.page_id, monkey: monkey.token, input: input };
-		
+
 		socket.broadcast.emit('say', response);
 		socket.emit('say', response);
-		
+
 	});
-	
+
 	// Monkey writing
 	socket.on('write', function(data) {
-		
+
 		var input = formatInput(data.input);
-		
-		Pages.find({ where: { id: data.page }}).success( function(page) {
-			
+
+		Pages.find({ where: { id: data.page }}).then( function(page) {
+
 			console.log(page.last_player +'/'+monkey.token);
-			
+
 			// Check input for forbidden signs
 			var m = /\/|\\|\||@|#|\[|]|{|}|\^|http|www|\.com|\.fr|\.net/.exec(data.input);
-			
+
 			// Check input
 			if (data.input.length > 30)
 			{
@@ -396,29 +391,29 @@ function connected(socket, monkey) {
 			{
 				// Increment page version
 				page.version++;
-				
+
 				// Update theme word count
 				page.theme_words -= input.split(' ').length - 1;
-		
+
 				// Changing theme if no more word
 				if (page.theme_words < 1)
 				{
 					page.theme_words = 30; // Get the counter back to 30;
 					var words = page.content.split(' '); // Get an array with words from page content
-					
+
 					var themes = [];
 					for (var w in words)
 					{
 						words[w] = validator.blacklist(words[w], '.!?,;::*"'); // Delete punctuation signs
 						if (words[w].length >= 5) themes.push(words[w]); // Keep only words with 5 letters or more
 					}
-					
+
 					page.theme = themes[Math.floor(Math.random() * themes.length)]; // Choose a random word from array
-					
+
 					log('Changing theme to "'+page.theme+'" on page '+page.id+'.');
 				}
 				delete page.content;
-		
+
 				// Create new input
 				Inputs
 				.create({
@@ -426,48 +421,48 @@ function connected(socket, monkey) {
 					page_version: page.version,
 					content: input,
 				})
-				.success(function(input) {
-					
+				.then(function(input) {
+
 					// Update page content
 					page.content += input.content;
 					page.last_player = monkey.token;
-					page.save().success( function() {
-						
+					page.save().then( function() {
+
 						var response = { page: page, monkey: monkey.token, input: input.content };
-						
+
 						socket.broadcast.emit('write', response);
 						socket.emit('write', response);
-						
+
 						log("Monkey #"+monkey.id+" wrote '"+input.content+"' on page "+page.id+".");
-					
+
 					});
-					
+
 				});
 			}
-					
+
 		});
-		
+
 	});
-	
+
 }
 
 // Broadcast monkey count to all monkeys
 function updateCount(socket) {
-	
+
 	log('Updating monkey count...');
-	
-	Pages.findAll({ attributes: ['id'], include: [Monkeys] }).success( function(res) {
-		
+
+	Pages.findAll({ attributes: ['id'], include: [Monkeys] }).then( function(res) {
+
 		var page, online = [];
 		for (var key in res)
 		{
 			page = res[key];
 			online.push({ id: page.id, count: page.Monkeys.length});
 		}
-		
+
 		socket.emit('monkeys', online);
 		socket.broadcast.emit('monkeys', online);
-		
+
 	}).error( function(err) {
 		log('Error while counting monkeys: '+err);
 	});
@@ -475,25 +470,25 @@ function updateCount(socket) {
 
 // Input format
 function formatInput(input) {
-	
+
 	// Trim input
 	input = input.trim();
-	
+
 	// Escape HTML characters
 	input = validator.escape(input);
-	
+
 	// Add space unless 1st character is . , - or _
 	if (!/^\.|^,|^-|^_/.test(input))
 	{
 		input = ' '+input;
 	}
-	
+
 	// Remove 1st character if _
 	if (/^_/.test(input))
 	{
 		input = input.substr(1);
 	}
-	
+
 	return input;
 }
 

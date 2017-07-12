@@ -25,7 +25,6 @@
     "jquery.hotkeys": "*",
     "tooltipster": "~3.3.0",
     "jquery-touchswipe": "~1.6.6",
-    "smoothscroll": "~0.0.4",
     "smooth-scroll": "https://github.com/cferdinandi/smooth-scroll.git"
   }
 }
