@@ -13,9 +13,13 @@ Demo: http://monkeys.nokto.net/
 
 ## Changelog
 
-0.24.2 (07/02/2015)
+0.24.3 (18/07/2019)
 
-- Add link to GitHub repository
+- Upgraded dependencies to fix multiple security flaws
+
+  0.24.2 (07/02/2015)
+
+- Added link to GitHub repository
 
   0.24.1 (30/12/2014)
 
