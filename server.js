@@ -232,7 +232,7 @@ function connected(socket, monkey) {
     Pages.findAndCountAll({
       attributes: ['id', 'createdAt'],
       include: [Monkeys],
-      order: 'createdAt',
+      order: ['createdAt'],
     }).then(function(result) {
       var pages = result.rows,
         route,
