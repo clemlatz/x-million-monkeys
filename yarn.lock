@@ -973,10 +973,10 @@ sqlstring@2.3.1, sqlstring@^2.3.1:
   resolved "https://registry.yarnpkg.com/statuses/-/statuses-1.5.0.tgz#161c7dac177659fd9811f43771fa99381478628c"
   integrity sha1-Fhx9rBd2Wf2YEfQ3cfqZOBR4Yow=
 
-strftime@^0.8.2:
-  version "0.8.4"
-  resolved "https://registry.yarnpkg.com/strftime/-/strftime-0.8.4.tgz#86b15949845e7de20c0c3d69db2b74fb73e4d25e"
-  integrity sha1-hrFZSYRefeIMDD1p2yt0+3Pk0l4=
+strftime@^0.10.0:
+  version "0.10.0"
+  resolved "https://registry.yarnpkg.com/strftime/-/strftime-0.10.0.tgz#b3f0fa419295202a5a289f6d6be9f4909a617193"
+  integrity sha1-s/D6QZKVICpaKJ9ta+n0kJphcZM=
 
 string_decoder@~1.1.1:
   version "1.1.1"
