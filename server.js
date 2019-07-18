@@ -7,7 +7,7 @@ var validator = require('validator');
 var Sequelize = require('sequelize');
 var sequelize = require('sequelize-heroku').connect(Sequelize);
 
-var version = '0.24.3';
+var version = '0.24.4';
 
 if (!sequelize) {
   try {
