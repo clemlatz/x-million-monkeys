@@ -312,7 +312,7 @@ function connected(socket, monkey) {
                 ' LIMIT 1'
             )
             .then(function(result) {
-              if (result[0].next) res.next = result[0].next;
+              if (result[0][0].next) res.next = result[0][0].next;
 
               sequelize
                 .query(
@@ -321,7 +321,7 @@ function connected(socket, monkey) {
                     ' LIMIT 1'
                 )
                 .then(function(result) {
-                  if (result[0].prev) res.prev = result[0].prev;
+                  if (result[0][0].prev) res.prev = result[0][0].prev;
 
                   log(
                     'Monkey #' +
