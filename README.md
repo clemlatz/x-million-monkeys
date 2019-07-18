@@ -13,6 +13,10 @@ Demo: http://monkeys.nokto.net/
 
 ## Changelog
 
+### DEV
+
+- Fixed getting ordered pages (Sequelize v5 breaking change)
+
 ### 0.24.3 (18/07/2019)
 
 - Upgraded dependencies to fix multiple security flaws
