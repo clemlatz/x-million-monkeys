@@ -10,7 +10,7 @@
     "mysql": "^2.17.1",
     "mysql2": "^1.6.5",
     "parse-redis-url": "0.0.1",
-    "pg": "^4.1.1",
+    "pg": "^7.11.0",
     "redis": "^0.12.1",
     "sequelize": "^5.10.1",
     "sequelize-heroku": "^2.0.0",
