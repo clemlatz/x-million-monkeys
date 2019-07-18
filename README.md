@@ -16,6 +16,7 @@ Demo: http://monkeys.nokto.net/
 ### DEV
 
 - Fixed getting ordered pages (Sequelize v5 breaking change)
+- Removed unused dependencies
 
 ### 0.24.3 (18/07/2019)
 
