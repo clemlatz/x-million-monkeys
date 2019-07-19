@@ -5,7 +5,6 @@ var io = require('socket.io')(http);
 var strftime = require('strftime');
 var validator = require('validator');
 var Sequelize = require('sequelize');
-var sequelize = require('sequelize-heroku').connect(Sequelize);
 
 var version = '0.24.4';
 
