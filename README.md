@@ -4,12 +4,27 @@ X Million Monkeys is a massively multiplayer online creative writing game, creat
 
 Demo: http://monkeys.nokto.net/
 
-## Installation
+## Run using docker
+
+```console
+docker run -d -p 3000:8080 \
+  -e CLEARDB_DATABASE_URL=mysql://user:pass@host/base \
+  iwazaru/x-million-monkeys
+```
+
+## Run locally from source
 
 1. Install node & yarn
-2. Install node dependencies: `yarn install`
-3. Create config file `mv config.js.example config.js`
-4. Add database credentials in `config.js`
+2. Install node & bower dependencies: `yarn`
+3. Create config file: `mv config.js.example config.js`
+4. Edit `config.js` to add database credentials
+5. Start app: `yarn start`
+
+## Build docker image from source
+
+```console
+docker build -t x-million-monkeys:latest .
+```
 
 ## Changelog
 
@@ -58,9 +73,9 @@ Demo: http://monkeys.nokto.net/
 
 ### 0.22.2 (12/07/2014)
 
-- - negative word count bug fixed
+- negative word count bug fixed
 
-  ### 0.22.1 (12/07/2014)
+### 0.22.1 (12/07/2014)
 
 - removed ponctuation characters from random theme
 - 5-letters or more words for random theme
