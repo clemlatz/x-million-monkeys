@@ -9,6 +9,11 @@ var sequelize = require('sequelize-heroku').connect(Sequelize);
 
 var version = '0.24.4';
 
+if (typeof process.env.PORT === 'undefined') {
+  console.error('PORT env variable must be defined (see README)');
+  process.exit();
+}
+
 if (typeof process.env.DB === 'undefined') {
   console.error('DB env variable must be defined (see README)');
   process.exit();
