@@ -9,23 +9,12 @@ var sequelize = require('sequelize-heroku').connect(Sequelize);
 
 var version = '0.24.4';
 
-if (!sequelize) {
-  try {
-    var config = require('./config');
-  } catch (e) {
-    console.log(
-      '*** Error : please create and fill config.js from config.js.example'
-    );
-    process.exit(0);
-  }
-
-  var sequelize = new Sequelize(
-    config.db.base,
-    config.db.user,
-    config.db.pass,
-    config.db.options
-  );
+if (typeof process.env.DB === 'undefined') {
+  console.error('DB env variable must be defined (see README)');
+  process.exit();
 }
+
+var sequelize = new Sequelize(process.env.DB, { logging: false });
 
 sequelize
   .authenticate()
