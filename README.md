@@ -28,7 +28,7 @@ docker build -t iwazaru/x-million-monkeys:latest .
 
 ## Changelog
 
-### DEV
+### 0.25.5 (29/07/2019)
 
 - Allowed to run in a Docker container
 - Allowed to use any MySQL database

@@ -6,7 +6,7 @@ var strftime = require('strftime');
 var validator = require('validator');
 var Sequelize = require('sequelize');
 
-var version = '0.24.4';
+var version = '0.24.5';
 
 if (typeof process.env.PORT === 'undefined') {
   console.error('PORT env variable must be defined (see README)');

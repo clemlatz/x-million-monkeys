@@ -1,6 +1,6 @@
 xmm = {
   app: {
-    version: '0.24.4',
+    version: '0.24.5',
   },
 
   token: null,
