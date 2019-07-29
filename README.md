@@ -32,6 +32,7 @@ docker build -t x-million-monkeys:latest .
 
 - Allowed to run in a Docker container
 - Allowed to use any MySQL database
+- Fixed non-capitalized table name in SQL query
 
 ### 0.24.4 (18/07/2019)
 

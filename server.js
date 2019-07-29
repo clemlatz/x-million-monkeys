@@ -300,7 +300,7 @@ function connected(socket, monkey) {
 
           sequelize
             .query(
-              'SELECT MIN(`id`) AS `next` FROM `pages` WHERE `id` > ' +
+              'SELECT MIN(`id`) AS `next` FROM `Pages` WHERE `id` > ' +
                 page.id +
                 ' LIMIT 1'
             )
@@ -309,7 +309,7 @@ function connected(socket, monkey) {
 
               sequelize
                 .query(
-                  'SELECT MAX(`id`) AS `prev` FROM `pages` WHERE `id` < ' +
+                  'SELECT MAX(`id`) AS `prev` FROM `Pages` WHERE `id` < ' +
                     page.id +
                     ' LIMIT 1'
                 )
