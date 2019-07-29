@@ -23,7 +23,7 @@ docker run -d -p 3000:8080 \
 ## Build docker image from source
 
 ```console
-docker build -t x-million-monkeys:latest .
+docker build -t iwazaru/x-million-monkeys:latest .
 ```
 
 ## Changelog
