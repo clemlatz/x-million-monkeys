@@ -8,7 +8,7 @@ Demo: http://monkeys.nokto.net/
 
 ```console
 docker run -d -p 3000:8080 \
-  -e CLEARDB_DATABASE_URL=mysql://user:pass@host/base \
+  -e DB=mysql://user:pass@host/base \
   iwazaru/x-million-monkeys
 ```
 
@@ -18,7 +18,7 @@ docker run -d -p 3000:8080 \
 2. Install node & bower dependencies: `yarn`
 3. Create config file: `mv config.js.example config.js`
 4. Edit `config.js` to add database credentials
-5. Start app: `yarn start`
+5. Start app: `PORT=3000 DB=mysql://user:pass@host/base yarn start`
 
 ## Build docker image from source
 
@@ -27,6 +27,11 @@ docker build -t x-million-monkeys:latest .
 ```
 
 ## Changelog
+
+### DEV
+
+- Allowed to run in a Docker container
+- Allowed to use any MySQL database
 
 ### 0.24.4 (18/07/2019)
 
