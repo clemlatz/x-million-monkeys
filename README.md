@@ -8,7 +8,9 @@ Demo: http://monkeys.nokto.net/
 
 ```console
 docker run -d -p 3000:8080 \
-  -e DB=mysql://user:pass@host/base \
+  --env DB=mysql://user:pass@host/base \
+  --restart=unless-stopped \
+  --name xmm \
   iwazaru/x-million-monkeys
 ```
 
