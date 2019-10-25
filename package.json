@@ -8,7 +8,7 @@
     "bower": "^1.8.8",
     "express": "4.x",
     "mysql2": "^1.6.5",
-    "sequelize": "^5.12.2",
+    "sequelize": "^5.15.1",
     "socket.io": "^2.0.0",
     "strftime": "^0.10.0",
     "validator": "^11.1.0"
