@@ -43,7 +43,7 @@ sequelize
       'Sequelize: Error connecting ' +
         config.host +
         ' as ' +
-        config.user +
+        config.username +
         ': ' +
         err
     );
