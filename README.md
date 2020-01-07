@@ -6,9 +6,11 @@ Demo: http://monkeys.nokto.net/
 
 ## Run using docker
 
+Attach MySQL database with `--env DB=mysql://user:pass@host/base` or with a `.env` file.
+
 ```console
-docker run -d -p 3000:8080 \
-  --env DB=mysql://user:pass@host/base \
+docker run -d -p 3300:8080 \
+  --env-file=.env \
   --restart=unless-stopped \
   --name xmm \
   iwazaru/x-million-monkeys
