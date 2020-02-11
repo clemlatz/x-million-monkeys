@@ -16,9 +16,13 @@ docker run -d -p 3300:8080 \
   iwazaru/x-million-monkeys
 ```
 
-Troubleshooting: if after Docker deployment, console shows "MIME" errors and app won't load, 
-run `docker exec -it xmm sh` to get into the container
-and `yarn postinstall` to force bower components install.
+Troubleshooting: if after Docker deployment, console shows "MIME" errors and app won't load, run:
+
+```console
+docker-compose exec xmm yarn postinstall
+```
+
+to install bower dependencies.
 
 ## Run locally from source
 
