@@ -32,6 +32,10 @@ docker build -t iwazaru/x-million-monkeys:latest .
 
 ## Changelog
 
+### 0.24.7 (24/07/2020)
+
+- Updated sequelize dependency to fix security issue
+
 ### 0.24.6 (26/11/2019)
 
 - Updated sequelize dependency to fix security flaw
