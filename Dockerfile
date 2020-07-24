@@ -7,7 +7,7 @@ WORKDIR /usr/src/app
 
 # Install app dependencies
 RUN apk add --no-cache git
-COPY package.json yarn.lock bower.json ./
+COPY package.json yarn.lock bower.json .bowerrc ./
 RUN yarn
 
 # Bundle app source
