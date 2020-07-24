@@ -19,10 +19,8 @@ docker run -d -p 3300:8080 \
 ## Run locally from source
 
 1. Install node & yarn
-2. Install node & bower dependencies: `yarn`
-3. Create config file: `mv config.js.example config.js`
-4. Edit `config.js` to add database credentials
-5. Start app: `PORT=3000 DB=mysql://user:pass@host/base yarn start`
+2. Install npm & bower dependencies: `yarn`
+3. Start app: `PORT=3000 DB=mysql://user:pass@host/base yarn start`
 
 ## Build docker image from source
 
@@ -35,6 +33,7 @@ docker build -t iwazaru/x-million-monkeys:latest .
 ### 0.24.7 (24/07/2020)
 
 - Updated sequelize dependency to fix security issue
+- Fix installing bower dependencies in docker image
 
 ### 0.24.6 (26/11/2019)
 
