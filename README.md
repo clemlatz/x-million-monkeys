@@ -2,7 +2,7 @@
 
 X Million Monkeys is a massively multiplayer online creative writing game, created in less than 48 hours during the HTML5 Game Jam back in july 2014 by [@AlexisMoroz](https://twitter.com/AlexisMoroz) (game design) and [@ClementBourgoin](https://twitter.com/ClementBourgoin) (code). The game jam theme was "Once Upon A Time".
 
-Demo: http://monkeys.nokto.net/
+Demo: https://xmm.iwazaru.fr/
 
 ## Run using docker
 
