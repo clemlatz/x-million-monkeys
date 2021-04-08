@@ -30,6 +30,10 @@ docker build -t iwazaru/x-million-monkeys:latest .
 
 ## Changelog
 
+### 0.24.8 (09/04/2021)
+
+- Updated socket.io dependency to fix security vulnerability
+
 ### 0.24.7 (24/07/2020)
 
 - Updated sequelize dependency to fix security issue
