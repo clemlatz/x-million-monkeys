@@ -492,7 +492,7 @@ function updateCount(socket) {
       socket.emit('monkeys', online);
       socket.broadcast.emit('monkeys', online);
     })
-    .error(function(err) {
+    .catch(function(err) {
       log('Error while counting monkeys: ' + err);
     });
 }
