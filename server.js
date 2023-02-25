@@ -1,12 +1,12 @@
-var express = require('express');
-var app = express();
-var http = require('http').Server(app);
-var io = require('socket.io')(http);
-var strftime = require('strftime');
-var validator = require('validator');
-var Sequelize = require('sequelize');
+const express = require('express');
+const app = express();
+const http = require('http').Server(app);
+const io = require('socket.io')(http);
+const strftime = require('strftime');
+const validator = require('validator');
+const Sequelize = require('sequelize');
 
-var version = '0.24.8';
+const version = '0.24.8';
 
 if (typeof process.env.PORT === 'undefined') {
   console.error('PORT env variable must be defined (see README)');
@@ -18,12 +18,12 @@ if (typeof process.env.DB === 'undefined') {
   process.exit();
 }
 
-var sequelize = new Sequelize(process.env.DB, { logging: false });
+const sequelize = new Sequelize(process.env.DB, {logging: false});
 
 sequelize
   .authenticate()
   .then(function() {
-    var config = sequelize.connectionManager.config;
+    const config = sequelize.connectionManager.config;
     console.log(
       'sequelize-heroku: Connected to ' +
         config.host +
@@ -38,7 +38,7 @@ sequelize
     });
   })
   .catch(function(err) {
-    var config = sequelize.connectionManager.config;
+    const config = sequelize.connectionManager.config;
     console.log(
       'Sequelize: Error connecting ' +
         config.host +
@@ -50,7 +50,7 @@ sequelize
   });
 
 // Page entity schema
-var Pages = sequelize.define('Page', {
+const Pages = sequelize.define('Page', {
   content: Sequelize.TEXT,
   last_player: Sequelize.STRING,
   version: Sequelize.INTEGER,
@@ -60,7 +60,7 @@ var Pages = sequelize.define('Page', {
 });
 
 // Monkey entity schema
-var Monkeys = sequelize.define('Monkey', {
+const Monkeys = sequelize.define('Monkey', {
   online: Sequelize.BOOLEAN,
   token: Sequelize.STRING,
   ip: Sequelize.STRING,
@@ -68,7 +68,7 @@ var Monkeys = sequelize.define('Monkey', {
 });
 
 // Input entity schema
-var Inputs = sequelize.define('Input', {
+const Inputs = sequelize.define('Input', {
   monkey_token: Sequelize.STRING,
   page_version: Sequelize.INTEGER,
   content: Sequelize.STRING,
@@ -121,7 +121,7 @@ io.on('connection', function(socket) {
 
   // Check version
   socket.on('version', function(local_version) {
-    if (local_version == version) {
+    if (local_version === version) {
       socket.emit('uptodate');
     } else {
       socket.emit(
@@ -153,7 +153,7 @@ io.on('connection', function(socket) {
 
         monkey
           .save()
-          .then(function(err) {
+          .then(function() {
             log('Created new monkey (#' + monkey.id + ') with token: ' + token);
             connected(socket, monkey);
           })
@@ -198,20 +198,19 @@ function connected(socket, monkey) {
       include: [Monkeys],
       order: ['createdAt'],
     }).then(function(result) {
-      var pages = result.rows,
-        route,
+      const pages = result.rows;
+      let route,
         rule;
 
       if (result.count) {
         // Page occupation
-        var total = 0,
-          count = 0,
-          key,
-          page,
-          ideal = [],
-          crowded = [],
-          empty = [],
-          blank = [];
+        let total = 0;
+        let count = 0;
+        let key;
+        let page;
+        const ideal = [];
+        const crowded = [];
+        const empty = [];
         for (key in pages) {
           page = pages[key];
           count = page.Monkeys.length;
@@ -222,10 +221,10 @@ function connected(socket, monkey) {
         }
 
         // Router rules
-        if (crowded.length == total) {
+        if (crowded.length === total) {
           // All pages are crowded, create a new one
           rule = 'all page crowded, creating a new one';
-        } else if (empty.length == total) {
+        } else if (empty.length === total) {
           // All pages are empty, go to page 1
           route = pages[0].id;
           rule = 'all pages empty';
@@ -296,7 +295,7 @@ function connected(socket, monkey) {
         monkey.setPage(page).then(function() {
           updateCount(socket);
 
-          var res = { page: page };
+          const res = {page: page};
 
           sequelize
             .query(
@@ -335,11 +334,11 @@ function connected(socket, monkey) {
 
   // Monkey saying
   socket.on('say', function(data) {
-    input = formatInput(data.input);
+    let input = formatInput(data.input);
 
     /* 		log("Monkey saying '"+data.input+"'"); */
 
-    var response = { page: data.page_id, monkey: monkey.token, input: input };
+    const response = {page: data.page_id, monkey: monkey.token, input: input};
 
     socket.broadcast.emit('say', response);
     socket.emit('say', response);
@@ -347,13 +346,13 @@ function connected(socket, monkey) {
 
   // Monkey writing
   socket.on('write', function(data) {
-    var input = formatInput(data.input);
+    const input = formatInput(data.input);
 
     Pages.findOne({ where: { id: data.page } }).then(function(page) {
       console.log(page.last_player + '/' + monkey.token);
 
       // Check input for forbidden signs
-      var m = /\/|\\|\||@|#|\[|]|{|}|\^|http|www|\.com|\.fr|\.net/.exec(
+      const m = /\/|\\|\||@|#|\[|]|{|}|\^|http|www|\.com|\.fr|\.net/.exec(
         data.input
       );
 
@@ -393,7 +392,7 @@ function connected(socket, monkey) {
             ') contains forbidden chars:' +
             m[0]
         );
-      } else if (page.version != data.version) {
+      } else if (page.version !== data.version) {
         socket.emit(
           'alert',
           'Too slow ! Someone has sent something since you start typing. You should check it and try again.'
@@ -404,7 +403,7 @@ function connected(socket, monkey) {
           input: '',
         });
         log('Monkey #' + monkey.id + "' was too slow.");
-      } else if (page.last_player == monkey.token) {
+      } else if (page.last_player === monkey.token) {
         socket.emit(
           'alert',
           'Too quick ! You wrote the last word of this page. You have to wait until someone else enters something.'
@@ -425,10 +424,10 @@ function connected(socket, monkey) {
         // Changing theme if no more word
         if (page.theme_words < 1) {
           page.theme_words = 30; // Get the counter back to 30;
-          var words = page.content.split(' '); // Get an array with words from page content
+          const words = page.content.split(' '); // Get an array with words from page content
 
-          var themes = [];
-          for (var w in words) {
+          const themes = [];
+          for (let w in words) {
             words[w] = validator.blacklist(words[w], '.!?,;::*"'); // Delete punctuation signs
             if (words[w].length >= 5) themes.push(words[w]); // Keep only words with 5 letters or more
           }
@@ -451,7 +450,7 @@ function connected(socket, monkey) {
           page.content += input.content;
           page.last_player = monkey.token;
           page.save().then(function() {
-            var response = {
+            const response = {
               page: page,
               monkey: monkey.token,
               input: input.content,
@@ -482,9 +481,9 @@ function updateCount(socket) {
 
   Pages.findAll({ attributes: ['id'], include: [Monkeys] })
     .then(function(res) {
-      var page,
-        online = [];
-      for (var key in res) {
+      let page;
+      const online = [];
+      for (let key in res) {
         page = res[key];
         online.push({ id: page.id, count: page.Monkeys.length });
       }
