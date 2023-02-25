@@ -2,7 +2,7 @@
 
 X Million Monkeys is a massively multiplayer online creative writing game, created in less than 48 hours during the HTML5 Game Jam back in july 2014 by [@AlexisMoroz](https://twitter.com/AlexisMoroz) (game design) and [@ClementBourgoin](https://twitter.com/ClementBourgoin) (code). The game jam theme was "Once Upon A Time".
 
-Demo: https://xmm.iwazaru.fr/
+Demo: https://xmm.clemlatz.dev/
 
 ## Run using docker
 
@@ -29,6 +29,10 @@ docker build -t iwazaru/x-million-monkeys:latest .
 ```
 
 ## Changelog
+
+### 0.24.9 (25/02/2023)
+
+- Updated sequelize dependency to fix security vulnerabilty
 
 ### 0.24.8 (09/04/2021)
 
