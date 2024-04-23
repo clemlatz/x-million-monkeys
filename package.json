@@ -7,7 +7,7 @@
   "dependencies": {
     "bower": "^1.8.8",
     "express": "4.x",
-    "mysql2": "^1.6.5",
+    "mysql2": "^3.9.7",
     "sequelize": "^6",
     "socket.io": "^2.0.0",
     "strftime": "^0.10.0",
